@@ -11,6 +11,7 @@ export function ThemeToggle() {
     <IconButton
       label={isDark ? "Switch to Paper theme" : "Switch to Darkroom theme"}
       onClick={toggleTheme}
+      suppressHydrationWarning
     >
       <span className="relative block h-4 w-4">
         <svg
@@ -20,6 +21,7 @@ export function ThemeToggle() {
             isDark ? "opacity-100" : "opacity-0"
           }`}
           aria-hidden="true"
+          suppressHydrationWarning
         >
           <path
             d="M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5 5.8 5.8 0 1 0 13.5 9.6Z"
@@ -35,6 +37,7 @@ export function ThemeToggle() {
             isDark ? "opacity-0" : "opacity-100"
           }`}
           aria-hidden="true"
+          suppressHydrationWarning
         >
           <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.3" />
           <path
