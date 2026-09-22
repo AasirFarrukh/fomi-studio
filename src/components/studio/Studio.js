@@ -136,6 +136,12 @@ export function Studio() {
     [launch, applyRecipe],
   );
 
+  const handleHomeClick = useCallback(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+    promptRef.current?.focus();
+  }, []);
+
   const handleRetry = useCallback(async () => {
     const items = await retry();
     const generation = itemsToGeneration(items);
@@ -153,6 +159,7 @@ export function Studio() {
           status={status}
           progress={progress}
           stage={stage}
+          onHomeClick={handleHomeClick}
         />
         <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
           <HistoryTray generations={generations} />

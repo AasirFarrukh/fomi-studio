@@ -4,7 +4,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 
-export function SiteHeader({ mode, onModeChange, status, progress, stage }) {
+export function SiteHeader({ mode, onModeChange, status, progress, stage, onHomeClick }) {
   return (
     <header className="flex flex-col gap-4 border-b border-line px-6 py-4">
       <div className="flex items-center gap-4">
@@ -33,6 +33,7 @@ export function SiteHeader({ mode, onModeChange, status, progress, stage }) {
           onModeChange={onModeChange}
           status={status}
           progress={progress}
+          onHomeClick={onHomeClick}
         />
       </div>
     </header>

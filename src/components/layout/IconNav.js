@@ -57,9 +57,9 @@ function iconTone(item, pending) {
   return "text-muted hover:text-ink hover:bg-raised";
 }
 
-export function IconNav({ mode, onModeChange, status, progress }) {
+export function IconNav({ mode, onModeChange, status, progress, onHomeClick }) {
   const items = [
-    { key: "home", label: "Home", here: true },
+    { key: "home", label: "Home", here: true, onClick: onHomeClick },
     { key: "image", label: "Images", selected: mode === "image", onClick: () => onModeChange("image") },
     { key: "video", label: "Videos", selected: mode === "video", onClick: () => onModeChange("video") },
     { key: "wand", label: "Edit", disabled: true },
