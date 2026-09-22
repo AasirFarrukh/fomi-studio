@@ -33,4 +33,4 @@ src/
 
 ## Design system
 
-See `CLAUDE.md` (untracked, local only) for the full "Darkroom" token spec — colors, type, radii, and motion.
+The full "Darkroom" token spec — colors, type, radii, and motion — lives in the project's local, untracked notes.
