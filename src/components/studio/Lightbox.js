@@ -37,11 +37,14 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
   const item = items[activeIndex];
 
   // The Lightbox instance can outlive a single "open" if a new item opens
-  // before the previous close animation finishes unmounting it — resync.
-  useEffect(() => {
+  // before the previous close animation finishes unmounting it — resync by
+  // adjusting state during render rather than in an effect (React docs:
+  // "Adjusting some state when a prop changes").
+  const [syncedItemId, setSyncedItemId] = useState(itemId);
+  if (itemId !== syncedItemId) {
+    setSyncedItemId(itemId);
     setActiveIndex(Math.max(items.findIndex((entry) => entry.id === itemId), 0));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemId, generation.generationId]);
+  }
 
   const contentRef = useRef(null);
   const touchStartRef = useRef(null);
@@ -132,7 +135,10 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
 
   // Waits out the dialog's own close animation before unmounting and, if a
   // reuse was requested, launching the flight — so it always plays against a
-  // clear composer, never mid-dismiss.
+  // clear composer, never mid-dismiss. Focus restoration is handled here
+  // explicitly (Dialog.Content's onCloseAutoFocus is disabled below) since
+  // this two-stage close outlives the single React commit Radix's own
+  // restoration is timed against.
   useEffect(() => {
     if (open) return undefined;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -140,7 +146,11 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
       onExited();
       const reuse = pendingReuseRef.current;
       pendingReuseRef.current = null;
-      reuse?.();
+      if (reuse) {
+        reuse();
+      } else if (sourceEl && document.contains(sourceEl)) {
+        sourceEl.focus({ preventScroll: true });
+      }
     }, reduced ? 120 : 200);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,6 +175,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
           ref={contentRef}
           className="lightbox-content"
           style={originStyle ?? undefined}
+          onCloseAutoFocus={(event) => event.preventDefault()}
         >
           <Dialog.Title className="sr-only">{item.prompt}</Dialog.Title>
           <Dialog.Description className="sr-only">
