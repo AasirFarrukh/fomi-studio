@@ -17,6 +17,7 @@ export function Composer({
   onModeChange,
   prompt,
   onPromptChange,
+  promptRef,
   count,
   onCountChange,
   aspectRatio,
@@ -44,6 +45,7 @@ export function Composer({
 
       <div className="flex flex-col gap-3 rounded-card-lg border border-line bg-raised p-3">
         <textarea
+          ref={promptRef}
           value={prompt}
           onChange={(event) => onPromptChange(event.target.value)}
           placeholder={

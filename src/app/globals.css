@@ -276,6 +276,39 @@ body {
     background-color var(--duration-mode) ease;
 }
 
+/*
+ * The reuse ghost: prompt text only, no media, flying from the prompt card to
+ * the composer input. The hook skips it entirely under reduced motion, so this
+ * never needs an opacity-only fallback.
+ */
+.recipe-ghost {
+  position: fixed;
+  z-index: 40;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-width: 340px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-radius: var(--radius-card);
+  background: var(--color-raised);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  pointer-events: none;
+  transform-origin: top left;
+  box-shadow: 0 18px 40px -20px color-mix(in srgb, var(--color-bg) 85%, black);
+  transition:
+    transform var(--duration-slow) var(--ease-out-expo),
+    opacity var(--duration-base) linear var(--duration-fast);
+}
+
+.recipe-ghost[data-in-flight] {
+  transform: translate(var(--fly-x), var(--fly-y)) scale(var(--fly-scale));
+  opacity: 0;
+}
+
 .press-spring:active {
   transform: scale(0.97);
   transition: transform var(--duration-fast) var(--ease-spring);

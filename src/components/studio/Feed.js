@@ -2,7 +2,7 @@ import { PromptCard } from "@/components/studio/PromptCard";
 import { MediaGrid } from "@/components/studio/MediaGrid";
 import { EmptyState } from "@/components/studio/EmptyState";
 
-export function Feed({ generations, status, stage, error, onRetry, pendingCount, mode }) {
+export function Feed({ generations, status, stage, error, onRetry, onReuse, pendingCount, mode }) {
   const hasContent = generations.length > 0;
   const showEmpty = !hasContent && status !== "loading" && status !== "error";
 
@@ -43,11 +43,7 @@ export function Feed({ generations, status, stage, error, onRetry, pendingCount,
           id={`gen-${generation.generationId}`}
           className="flex scroll-mt-6 flex-col gap-3"
         >
-          <PromptCard
-            prompt={generation.prompt}
-            model={generation.model}
-            createdAt={generation.createdAt}
-          />
+          <PromptCard generation={generation} onReuse={onReuse} />
           <MediaGrid items={generation.items} />
         </div>
       ))}

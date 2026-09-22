@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { HistoryTray } from "@/components/studio/HistoryTray";
 import { Composer } from "@/components/studio/Composer";
 import { Feed } from "@/components/studio/Feed";
+import { RecipeFlight } from "@/components/studio/RecipeFlight";
 import { ToneLinkProvider } from "@/components/studio/ToneLink";
 import { useGeneration } from "@/hooks/useGeneration";
+import { useRecipeFlight } from "@/hooks/useRecipeFlight";
 import {
   imageModels as fallbackImageModels,
   videoModels as fallbackVideoModels,
@@ -20,6 +22,8 @@ function itemsToGeneration(items) {
     prompt: first.prompt,
     type: first.type,
     model: first.model,
+    modelId: first.modelId,
+    aspectRatio: first.aspectRatio,
     createdAt: first.createdAt,
     items,
   };
@@ -37,7 +41,9 @@ export function Studio() {
   const [aspectRatio, setAspectRatio] = useState(fallbackImageModels[0].ratios[0]);
   const [generations, setGenerations] = useState([]);
 
+  const promptRef = useRef(null);
   const { status, error, progress, stage, generate, retry, cancel } = useGeneration();
+  const { flight, launch, land } = useRecipeFlight(promptRef);
 
   useEffect(() => {
     let active = true;
@@ -102,6 +108,34 @@ export function Studio() {
     }
   }, [prompt, mode, count, aspectRatio, modelId, generate]);
 
+  const applyRecipe = useCallback(
+    (generation) => {
+      const type = generation.type === "video" ? "video" : "image";
+      const list = models[type] ?? [];
+      const model = list.find((entry) => entry.id === generation.modelId) ?? list[0];
+
+      setMode(type);
+      setPrompt(generation.prompt);
+      if (model) {
+        setModelId(model.id);
+        setAspectRatio(
+          model.ratios.includes(generation.aspectRatio)
+            ? generation.aspectRatio
+            : model.ratios[0],
+        );
+      }
+      promptRef.current?.focus();
+    },
+    [models],
+  );
+
+  const handleReuse = useCallback(
+    (generation, sourceEl) => {
+      launch(generation.prompt, sourceEl, () => applyRecipe(generation));
+    },
+    [launch, applyRecipe],
+  );
+
   const handleRetry = useCallback(async () => {
     const items = await retry();
     const generation = itemsToGeneration(items);
@@ -128,6 +162,7 @@ export function Studio() {
               onModeChange={handleModeChange}
               prompt={prompt}
               onPromptChange={setPrompt}
+              promptRef={promptRef}
               count={count}
               onCountChange={setCount}
               aspectRatio={aspectRatio}
@@ -145,12 +180,14 @@ export function Studio() {
               stage={stage}
               error={error}
               onRetry={handleRetry}
+              onReuse={handleReuse}
               pendingCount={count}
               mode={mode}
             />
           </div>
         </div>
       </div>
+      <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
     </ToneLinkProvider>
   );
 }
