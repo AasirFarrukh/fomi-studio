@@ -10,7 +10,6 @@
   --color-accent: #ff6a3d;
   --color-accent-fill: #ff6a3d;
   --color-on-accent: var(--on-accent);
-  --color-tone: var(--tone, var(--color-accent-fill));
 
   --radius-panel: 28px;
   --radius-card-lg: 20px;
@@ -78,8 +77,11 @@
  * --color-accent-fill (solid button backgrounds) is always the vivid hue,
  * since the label sitting on top is --on-accent, not the page background.
  * --color-accent (text/icon/ring) is theme-corrected for legibility, so it
- * depends on both mode and theme together. --color-tone defaults to the
- * same hue but is reassigned per card to the generation's dominant color.
+ * depends on both mode and theme together. --tone is the same hue until a
+ * card or thumbnail reassigns it to its generation's dominant color.
+ *
+ * --tone is likewise read straight at each point of use: an alias declared on
+ * :root would substitute there, so a per-card --tone could never reach it.
  *
  * These are set directly (not through an intermediate --accent variable)
  * because Chromium fails to propagate live updates through a var() chain
@@ -132,7 +134,7 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--color-tone) 35%, transparent);
+  background: color-mix(in srgb, var(--tone, var(--color-accent-fill)) 35%, transparent);
   color: var(--color-ink);
 }
 
@@ -161,17 +163,27 @@ body {
   box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--color-bg) 75%, black);
 }
 
-.ring-tone {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tone) 45%, transparent);
+/*
+ * --tone only ever buys glow, ring and selection. "active" is the item under
+ * the pointer or focus; "linked" is the rest of that generation wherever else
+ * it appears, ringed in the same tone but without the glow.
+ */
+.tone-target {
+  transition:
+    box-shadow var(--duration-base) var(--ease-out-expo),
+    border-color var(--duration-base) var(--ease-out-expo);
 }
 
-.tone-ring {
-  transition: box-shadow var(--duration-base) var(--ease-out-expo);
+.tone-target[data-tone="linked"] {
+  border-color: color-mix(in srgb, var(--tone, var(--color-accent-fill)) 55%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tone, var(--color-accent-fill)) 30%, transparent);
 }
 
-.tone-ring:hover,
-.tone-ring:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tone) 50%, transparent);
+.tone-target[data-tone="active"] {
+  border-color: color-mix(in srgb, var(--tone, var(--color-accent-fill)) 85%, transparent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--tone, var(--color-accent-fill)) 55%, transparent),
+    0 14px 36px -14px color-mix(in srgb, var(--tone, var(--color-accent-fill)) 65%, transparent);
 }
 
 .grain-overlay {
@@ -288,6 +300,7 @@ body {
     animation: develop-reduced var(--duration-base) linear both;
   }
 
+  .tone-target,
   .tab-indicator,
   .nav-indicator,
   .nav-indicator-fill,

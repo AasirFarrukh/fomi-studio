@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useToneLink } from "@/components/studio/ToneLink";
 
 export function MediaCard({ item }) {
   const [loaded, setLoaded] = useState(false);
   const isVideo = item.type === "video";
+  const link = useToneLink().linkProps(item);
 
   return (
     <div
-      className="tone-ring relative overflow-hidden rounded-card-lg border border-line bg-raised"
-      style={{ aspectRatio: `${item.width} / ${item.height}`, "--tone": item.tone }}
+      {...link}
+      className={`relative overflow-hidden rounded-card-lg border border-line bg-raised ${link.className}`}
+      style={{ aspectRatio: `${item.width} / ${item.height}`, ...link.style }}
       tabIndex={0}
     >
       {isVideo ? (

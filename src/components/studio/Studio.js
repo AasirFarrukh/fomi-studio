@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { HistoryTray } from "@/components/studio/HistoryTray";
 import { Composer } from "@/components/studio/Composer";
 import { Feed } from "@/components/studio/Feed";
+import { ToneLinkProvider } from "@/components/studio/ToneLink";
 import { useGeneration } from "@/hooks/useGeneration";
 import {
   imageModels as fallbackImageModels,
@@ -110,44 +111,46 @@ export function Studio() {
   }, [retry]);
 
   return (
-    <div data-mode={mode} className="flex min-h-screen flex-col bg-bg">
-      <SiteHeader
-        mode={mode}
-        onModeChange={handleModeChange}
-        status={status}
-        progress={progress}
-        stage={stage}
-      />
-      <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
-        <HistoryTray generations={generations} />
-        <div className="flex flex-1 flex-col gap-4 md:flex-row">
-          <Composer
-            mode={mode}
-            onModeChange={handleModeChange}
-            prompt={prompt}
-            onPromptChange={setPrompt}
-            count={count}
-            onCountChange={setCount}
-            aspectRatio={aspectRatio}
-            onAspectRatioChange={setAspectRatio}
-            modelId={modelId}
-            onModelChange={handleModelChange}
-            models={currentModels}
-            status={status}
-            onSubmit={handleSubmit}
-            onCancel={cancel}
-          />
-          <Feed
-            generations={generations}
-            status={status}
-            stage={stage}
-            error={error}
-            onRetry={handleRetry}
-            pendingCount={count}
-            mode={mode}
-          />
+    <ToneLinkProvider>
+      <div data-mode={mode} className="flex min-h-screen flex-col bg-bg">
+        <SiteHeader
+          mode={mode}
+          onModeChange={handleModeChange}
+          status={status}
+          progress={progress}
+          stage={stage}
+        />
+        <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
+          <HistoryTray generations={generations} />
+          <div className="flex flex-1 flex-col gap-4 md:flex-row">
+            <Composer
+              mode={mode}
+              onModeChange={handleModeChange}
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              count={count}
+              onCountChange={setCount}
+              aspectRatio={aspectRatio}
+              onAspectRatioChange={setAspectRatio}
+              modelId={modelId}
+              onModelChange={handleModelChange}
+              models={currentModels}
+              status={status}
+              onSubmit={handleSubmit}
+              onCancel={cancel}
+            />
+            <Feed
+              generations={generations}
+              status={status}
+              stage={stage}
+              error={error}
+              onRetry={handleRetry}
+              pendingCount={count}
+              mode={mode}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </ToneLinkProvider>
   );
 }

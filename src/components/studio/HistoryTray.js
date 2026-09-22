@@ -2,6 +2,27 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useToneLink } from "@/components/studio/ToneLink";
+
+function HistoryThumb({ item }) {
+  const link = useToneLink().linkProps(item);
+
+  return (
+    <a
+      {...link}
+      href={`#gen-${item.generationId}`}
+      className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-card border border-line ${link.className}`}
+    >
+      <Image
+        src={item.poster ?? item.src}
+        alt=""
+        fill
+        sizes="80px"
+        className="object-cover"
+      />
+    </a>
+  );
+}
 
 export function HistoryTray({ generations }) {
   const [expanded, setExpanded] = useState(false);
@@ -32,19 +53,7 @@ export function HistoryTray({ generations }) {
           </span>
         </button>
         {items.map((item) => (
-          <a
-            key={item.id}
-            href={`#gen-${item.generationId}`}
-            className="relative h-20 w-20 shrink-0 overflow-hidden rounded-card border border-line"
-          >
-            <Image
-              src={item.poster ?? item.src}
-              alt=""
-              fill
-              sizes="80px"
-              className="object-cover"
-            />
-          </a>
+          <HistoryThumb key={item.id} item={item} />
         ))}
       </div>
     </div>
