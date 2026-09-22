@@ -10,7 +10,7 @@ export function IconButton({
       type="button"
       aria-label={label}
       title={label}
-      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-base ${
+      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors duration-mode ${
         active
           ? "border-transparent bg-accent-fill text-on-accent"
           : "border-line bg-surface text-ink hover:bg-raised"

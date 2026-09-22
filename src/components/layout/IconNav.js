@@ -68,7 +68,7 @@ export function IconNav({ mode, onModeChange }) {
           aria-disabled={item.disabled || undefined}
           title={item.disabled ? `${item.label} — coming soon` : item.label}
           onClick={item.disabled ? undefined : item.onClick}
-          className={`flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-base ${
+          className={`flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode ${
             item.disabled
               ? "text-muted/50 cursor-not-allowed"
               : item.current

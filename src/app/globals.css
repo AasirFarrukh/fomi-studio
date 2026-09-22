@@ -23,6 +23,7 @@
 
   --duration-fast: 120ms;
   --duration-base: 200ms;
+  --duration-mode: 300ms;
   --duration-slow: 320ms;
   --duration-develop: 700ms;
 
@@ -100,6 +101,18 @@
   --tone: var(--teal-fill);
 }
 
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff6a3d;
+}
+
+@property --accent-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ff6a3d;
+}
+
 html {
   color-scheme: light dark;
 }
@@ -144,6 +157,15 @@ body {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tone) 45%, transparent);
 }
 
+.tone-ring {
+  transition: box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+.tone-ring:hover,
+.tone-ring:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone, var(--color-accent-fill)) 50%, transparent);
+}
+
 .grain-overlay {
   position: fixed;
   inset: 0;
@@ -183,7 +205,9 @@ body {
 }
 
 .tab-indicator {
-  transition: transform var(--duration-base) var(--ease-out-expo);
+  transition:
+    transform var(--duration-base) var(--ease-out-expo),
+    background-color var(--duration-mode) ease;
 }
 
 .press-spring:active {
