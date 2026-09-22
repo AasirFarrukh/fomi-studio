@@ -218,6 +218,52 @@ body {
     background-color var(--duration-mode) ease;
 }
 
+/*
+ * One element, two readings. Idle it is a solid ember pill parked over the
+ * selected mode (44px slot, 48px pitch — w-11 buttons in a gap-1 p-1 row).
+ * Pending it drops to a hairline rail across the whole nav and the inner fill
+ * scales to `progress`, so a half-finished run can never be mistaken for a
+ * selected tab.
+ */
+.nav-indicator {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  z-index: 0;
+  width: 44px;
+  height: calc(100% - 8px);
+  overflow: hidden;
+  border-radius: var(--radius-chip);
+  background: color-mix(in srgb, var(--color-accent-fill) 18%, transparent);
+  pointer-events: none;
+  transform: translateX(calc(var(--slot) * 48px));
+  transition:
+    transform var(--duration-slow) var(--ease-spring),
+    width var(--duration-slow) var(--ease-out-expo),
+    height var(--duration-slow) var(--ease-out-expo),
+    top var(--duration-slow) var(--ease-out-expo),
+    background-color var(--duration-mode) ease;
+}
+
+.nav-indicator[data-pending] {
+  top: calc(100% - 7px);
+  width: calc(100% - 8px);
+  height: 3px;
+  transform: translateX(0);
+}
+
+.nav-indicator-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: var(--color-accent-fill);
+  transform-origin: left center;
+  transition:
+    transform var(--duration-base) var(--ease-out-expo),
+    background-color var(--duration-mode) ease;
+}
+
 .press-spring:active {
   transform: scale(0.97);
   transition: transform var(--duration-fast) var(--ease-spring);
@@ -243,6 +289,8 @@ body {
   }
 
   .tab-indicator,
+  .nav-indicator,
+  .nav-indicator-fill,
   .press-spring:active,
   .disclosure-content {
     transition-duration: 0.01ms;

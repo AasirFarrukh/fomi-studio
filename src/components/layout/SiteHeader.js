@@ -28,7 +28,12 @@ export function SiteHeader({ mode, onModeChange, status, progress, stage }) {
       </div>
 
       <div className="flex justify-center">
-        <IconNav mode={mode} onModeChange={onModeChange} />
+        <IconNav
+          mode={mode}
+          onModeChange={onModeChange}
+          status={status}
+          progress={progress}
+        />
       </div>
     </header>
   );

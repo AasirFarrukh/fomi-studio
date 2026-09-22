@@ -1,3 +1,5 @@
+"use client";
+
 const ICONS = {
   home: (
     <path
@@ -48,33 +50,58 @@ function NavIcon({ name }) {
   );
 }
 
-export function IconNav({ mode, onModeChange }) {
+function iconTone(item, pending) {
+  if (item.disabled) return "text-muted/50 cursor-not-allowed";
+  if (item.selected) return pending ? "text-accent" : "text-on-accent";
+  if (item.here) return "text-ink";
+  return "text-muted hover:text-ink hover:bg-raised";
+}
+
+export function IconNav({ mode, onModeChange, status, progress }) {
   const items = [
-    { key: "home", label: "Home", current: true },
-    { key: "image", label: "Images", current: mode === "image", onClick: () => onModeChange("image") },
-    { key: "video", label: "Videos", current: mode === "video", onClick: () => onModeChange("video") },
+    { key: "home", label: "Home", here: true },
+    { key: "image", label: "Images", selected: mode === "image", onClick: () => onModeChange("image") },
+    { key: "video", label: "Videos", selected: mode === "video", onClick: () => onModeChange("video") },
     { key: "wand", label: "Edit", disabled: true },
     { key: "folder", label: "Projects", disabled: true },
   ];
 
+  // The indicator only ever sits on a mode tab, so it can never disagree with
+  // the composer; Home marks "you are here" with ink instead of the ember pill.
+  const selectedIndex = items.findIndex((item) => item.selected);
+
+  // Pending owns the indicator until the run settles — a finished run reads as
+  // idle on the same frame progress lands on 1.
+  const pending = status === "loading" && progress < 1;
+
   return (
-    <nav aria-label="Studio sections" className="flex items-center gap-1 rounded-chip border border-line bg-surface p-1">
+    <nav
+      aria-label="Studio sections"
+      className="relative flex items-center gap-1 rounded-chip border border-line bg-surface p-1"
+    >
+      <span
+        aria-hidden="true"
+        className="nav-indicator"
+        data-pending={pending || undefined}
+        style={{ "--slot": selectedIndex }}
+      >
+        <span
+          className="nav-indicator-fill"
+          style={{ transform: `scaleX(${pending ? progress : 1})` }}
+        />
+      </span>
+
       {items.map((item) => (
         <button
           key={item.key}
           type="button"
           aria-label={item.label}
-          aria-current={item.current ? "page" : undefined}
+          aria-current={item.here ? "page" : undefined}
+          aria-pressed={item.selected === undefined ? undefined : item.selected}
           aria-disabled={item.disabled || undefined}
           title={item.disabled ? `${item.label} — coming soon` : item.label}
           onClick={item.disabled ? undefined : item.onClick}
-          className={`flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode ${
-            item.disabled
-              ? "text-muted/50 cursor-not-allowed"
-              : item.current
-                ? "bg-accent-fill text-on-accent"
-                : "text-muted hover:text-ink hover:bg-raised"
-          }`}
+          className={`relative z-10 flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode ${iconTone(item, pending)}`}
         >
           <NavIcon name={item.key} />
         </button>
