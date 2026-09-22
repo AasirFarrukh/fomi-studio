@@ -314,6 +314,29 @@ body {
   transition: transform var(--duration-fast) var(--ease-spring);
 }
 
+/*
+ * The reuse guard falls back to this plain fade when the source card can't be
+ * measured (e.g. scrolled away) — always opacity-only, per the reduced-motion
+ * fallback, so it never needs its own reduced-motion override.
+ */
+.recipe-landed-flash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--color-accent-fill) 16%, transparent);
+  pointer-events: none;
+  animation: recipe-landed-fade var(--duration-base) ease-out both;
+}
+
+@keyframes recipe-landed-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .disclosure-content {
   display: grid;
   grid-template-rows: 0fr;

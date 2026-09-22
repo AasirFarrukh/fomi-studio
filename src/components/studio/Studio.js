@@ -43,7 +43,7 @@ export function Studio() {
 
   const promptRef = useRef(null);
   const { status, error, progress, stage, generate, retry, cancel } = useGeneration();
-  const { flight, launch, land } = useRecipeFlight(promptRef);
+  const { flight, launch, land, landedPulse } = useRecipeFlight(promptRef);
 
   useEffect(() => {
     let active = true;
@@ -180,6 +180,7 @@ export function Studio() {
               status={status}
               onSubmit={handleSubmit}
               onCancel={cancel}
+              landedPulse={landedPulse}
             />
             <Feed
               generations={generations}

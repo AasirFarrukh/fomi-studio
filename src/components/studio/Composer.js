@@ -28,6 +28,7 @@ export function Composer({
   status,
   onSubmit,
   onCancel,
+  landedPulse,
 }) {
   const isLoading = status === "loading";
   const currentModel = models.find((model) => model.id === modelId) ?? models[0];
@@ -43,7 +44,8 @@ export function Composer({
     >
       <Tabs options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
 
-      <div className="flex flex-col gap-3 rounded-card-lg border border-line bg-raised p-3">
+      <div className="relative flex flex-col gap-3 rounded-card-lg border border-line bg-raised p-3">
+        {landedPulse ? <span key={landedPulse} aria-hidden="true" className="recipe-landed-flash" /> : null}
         <textarea
           ref={promptRef}
           value={prompt}
