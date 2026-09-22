@@ -8,6 +8,7 @@ import { Composer } from "@/components/studio/Composer";
 import { Feed } from "@/components/studio/Feed";
 import { RecipeFlight } from "@/components/studio/RecipeFlight";
 import { ToneLinkProvider } from "@/components/studio/ToneLink";
+import { QuickLookProvider } from "@/components/studio/QuickLook";
 import { useGeneration } from "@/hooks/useGeneration";
 import { useRecipeFlight } from "@/hooks/useRecipeFlight";
 import {
@@ -175,60 +176,62 @@ export function Studio() {
 
   return (
     <ToneLinkProvider>
-      <div data-mode={mode} className="flex min-h-screen flex-col bg-bg">
-        <SiteHeader
-          mode={mode}
-          onModeChange={handleModeChange}
-          status={status}
-          progress={progress}
-          stage={stage}
-          onHomeClick={handleHomeClick}
-        />
-        <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
-          <HistoryTray generations={generations} />
-          <div className="flex flex-1 flex-col gap-4 md:flex-row">
-            <Composer
-              mode={mode}
-              onModeChange={handleModeChange}
-              prompt={prompt}
-              onPromptChange={setPrompt}
-              promptRef={promptRef}
-              count={count}
-              onCountChange={setCount}
-              aspectRatio={aspectRatio}
-              onAspectRatioChange={setAspectRatio}
-              modelId={modelId}
-              onModelChange={handleModelChange}
-              models={currentModels}
-              status={status}
-              onSubmit={handleSubmit}
-              onCancel={cancel}
-              landedPulse={landedPulse}
-            />
-            <Feed
-              generations={generations}
-              status={status}
-              stage={stage}
-              error={error}
-              onRetry={handleRetry}
-              onReuse={handleReuse}
-              onOpenLightbox={handleOpenLightbox}
-              pendingCount={count}
-              mode={mode}
-            />
+      <QuickLookProvider>
+        <div data-mode={mode} className="flex min-h-screen flex-col bg-bg">
+          <SiteHeader
+            mode={mode}
+            onModeChange={handleModeChange}
+            status={status}
+            progress={progress}
+            stage={stage}
+            onHomeClick={handleHomeClick}
+          />
+          <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
+            <HistoryTray generations={generations} />
+            <div className="flex flex-1 flex-col gap-4 md:flex-row">
+              <Composer
+                mode={mode}
+                onModeChange={handleModeChange}
+                prompt={prompt}
+                onPromptChange={setPrompt}
+                promptRef={promptRef}
+                count={count}
+                onCountChange={setCount}
+                aspectRatio={aspectRatio}
+                onAspectRatioChange={setAspectRatio}
+                modelId={modelId}
+                onModelChange={handleModelChange}
+                models={currentModels}
+                status={status}
+                onSubmit={handleSubmit}
+                onCancel={cancel}
+                landedPulse={landedPulse}
+              />
+              <Feed
+                generations={generations}
+                status={status}
+                stage={stage}
+                error={error}
+                onRetry={handleRetry}
+                onReuse={handleReuse}
+                onOpenLightbox={handleOpenLightbox}
+                pendingCount={count}
+                mode={mode}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
-      {lightboxData ? (
-        <Lightbox
-          data={lightboxData}
-          open={lightboxOpen}
-          onOpenChange={handleLightboxOpenChange}
-          onReuse={handleReuse}
-          onExited={handleLightboxExited}
-        />
-      ) : null}
+        <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
+        {lightboxData ? (
+          <Lightbox
+            data={lightboxData}
+            open={lightboxOpen}
+            onOpenChange={handleLightboxOpenChange}
+            onReuse={handleReuse}
+            onExited={handleLightboxExited}
+          />
+        ) : null}
+      </QuickLookProvider>
     </ToneLinkProvider>
   );
 }

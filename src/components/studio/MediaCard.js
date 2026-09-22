@@ -3,11 +3,13 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useToneLink } from "@/components/studio/ToneLink";
+import { useQuickLookTarget } from "@/components/studio/QuickLook";
 
 export function MediaCard({ item, onOpen }) {
   const [loaded, setLoaded] = useState(false);
   const isVideo = item.type === "video";
   const link = useToneLink().linkProps(item);
+  const setQuickLookTarget = useQuickLookTarget();
   const cardRef = useRef(null);
 
   const handleOpen = () => onOpen?.(cardRef.current);
@@ -17,6 +19,26 @@ export function MediaCard({ item, onOpen }) {
       event.preventDefault();
       handleOpen();
     }
+  };
+
+  const handlePointerEnter = () => {
+    link.onPointerEnter();
+    setQuickLookTarget?.(item, cardRef.current);
+  };
+
+  const handlePointerLeave = () => {
+    link.onPointerLeave();
+    setQuickLookTarget?.(null, null);
+  };
+
+  const handleFocus = () => {
+    link.onFocus();
+    setQuickLookTarget?.(item, cardRef.current);
+  };
+
+  const handleBlur = () => {
+    link.onBlur();
+    setQuickLookTarget?.(null, null);
   };
 
   return (
@@ -29,6 +51,10 @@ export function MediaCard({ item, onOpen }) {
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       className={`relative overflow-hidden rounded-card-lg border border-line bg-raised ${link.className}`}
       style={{ aspectRatio: `${item.width} / ${item.height}`, ...link.style }}
     >

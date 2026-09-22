@@ -611,6 +611,78 @@ video.lightbox-media-el {
   background: var(--color-raised);
 }
 
+/*
+ * Quick Look: a lighter, faster hold-to-peek preview. No focus trap, no
+ * dialog semantics — it lives and dies with the Space key, so it skips an
+ * exit animation entirely rather than trying to outlive its own dismissal.
+ */
+.quicklook-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  pointer-events: none;
+  animation: quicklook-backdrop-in var(--duration-fast) ease-out both;
+}
+
+@keyframes quicklook-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.quicklook-frame {
+  display: flex;
+  max-width: min(72vw, 720px);
+  max-height: 80vh;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-card-lg);
+  border: 1px solid color-mix(in srgb, var(--tone, var(--color-accent-fill)) 45%, var(--line));
+  background: var(--color-surface);
+  box-shadow: 0 30px 60px -24px color-mix(in srgb, var(--color-bg) 85%, black);
+  animation: quicklook-in var(--duration-base) var(--ease-out-expo) both;
+}
+
+@keyframes quicklook-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes quicklook-in-reduced {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.quicklook-media {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+}
+
+.quicklook-caption {
+  padding: 10px 14px;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
 .disclosure-content {
   display: grid;
   grid-template-rows: 0fr;
@@ -655,5 +727,13 @@ video.lightbox-media-el {
   /* Boundary cue keeps its dim/disabled arrow; the rubber-band settle drops. */
   .lightbox-media[data-edge-bump] {
     animation: none;
+  }
+
+  .quicklook-backdrop {
+    animation: none;
+  }
+
+  .quicklook-frame {
+    animation: quicklook-in-reduced var(--duration-fast) linear both;
   }
 }
