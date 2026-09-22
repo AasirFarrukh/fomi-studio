@@ -7,10 +7,10 @@
   --color-line: var(--line);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-fill: var(--accent-fill);
+  --color-accent: #ff6a3d;
+  --color-accent-fill: #ff6a3d;
   --color-on-accent: var(--on-accent);
-  --color-tone: var(--tone);
+  --color-tone: var(--tone, var(--color-accent-fill));
 
   --radius-panel: 28px;
   --radius-card-lg: 20px;
@@ -62,10 +62,6 @@
   --ink: #f3eee6;
   --muted: #a39a8e;
   --on-accent: #12100e;
-  --ember-fill: #ff6a3d;
-  --ember-ink: #ff6a3d;
-  --teal-fill: #46c2b0;
-  --teal-ink: #46c2b0;
 }
 
 [data-theme="light"] {
@@ -76,38 +72,50 @@
   --ink: #1c1916;
   --muted: #6b6358;
   --on-accent: #1c1916;
-  --ember-fill: #ff6a3d;
-  --ember-ink: #b93e17;
-  --teal-fill: #46c2b0;
-  --teal-ink: #17766a;
 }
 
 /*
- * Mode drives --accent (text/icon/ring, theme-corrected for legibility)
- * separately from --accent-fill (solid button backgrounds, always the
- * vivid hue since the label sitting on top is --on-accent, not the page
- * background). --tone defaults to the same hue but is reassigned per
- * card to the generation's dominant color.
+ * --color-accent-fill (solid button backgrounds) is always the vivid hue,
+ * since the label sitting on top is --on-accent, not the page background.
+ * --color-accent (text/icon/ring) is theme-corrected for legibility, so it
+ * depends on both mode and theme together. --color-tone defaults to the
+ * same hue but is reassigned per card to the generation's dominant color.
+ *
+ * These are set directly (not through an intermediate --accent variable)
+ * because Chromium fails to propagate live updates through a var() chain
+ * when the source is @property-registered but an alias in between isn't.
  */
 [data-mode="image"] {
-  --accent: var(--ember-ink);
-  --accent-fill: var(--ember-fill);
-  --tone: var(--ember-fill);
+  --color-accent-fill: #ff6a3d;
 }
 
 [data-mode="video"] {
-  --accent: var(--teal-ink);
-  --accent-fill: var(--teal-fill);
-  --tone: var(--teal-fill);
+  --color-accent-fill: #46c2b0;
 }
 
-@property --accent {
+[data-theme="dark"] [data-mode="image"] {
+  --color-accent: #ff6a3d;
+}
+
+[data-theme="light"] [data-mode="image"] {
+  --color-accent: #b93e17;
+}
+
+[data-theme="dark"] [data-mode="video"] {
+  --color-accent: #46c2b0;
+}
+
+[data-theme="light"] [data-mode="video"] {
+  --color-accent: #17766a;
+}
+
+@property --color-accent {
   syntax: "<color>";
   inherits: true;
   initial-value: #ff6a3d;
 }
 
-@property --accent-fill {
+@property --color-accent-fill {
   syntax: "<color>";
   inherits: true;
   initial-value: #ff6a3d;
@@ -163,7 +171,7 @@ body {
 
 .tone-ring:hover,
 .tone-ring:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone, var(--color-accent-fill)) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tone) 50%, transparent);
 }
 
 .grain-overlay {
