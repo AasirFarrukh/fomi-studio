@@ -182,8 +182,37 @@ body {
   animation: develop var(--duration-develop) var(--ease-out-expo) both;
 }
 
+.tab-indicator {
+  transition: transform var(--duration-base) var(--ease-out-expo);
+}
+
+.press-spring:active {
+  transform: scale(0.97);
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+.disclosure-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-slow) var(--ease-out-expo);
+}
+
+.disclosure-content[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.disclosure-content > div {
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .media-develop {
     animation: develop-reduced var(--duration-base) linear both;
+  }
+
+  .tab-indicator,
+  .press-spring:active,
+  .disclosure-content {
+    transition-duration: 0.01ms;
   }
 }
