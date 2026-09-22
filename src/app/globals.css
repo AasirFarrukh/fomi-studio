@@ -337,6 +337,280 @@ body {
   }
 }
 
+/*
+ * Lightbox: scale+fade from the clicked card's own rect (transform-origin is
+ * set inline, computed from its measured position) rather than a center pop.
+ * Radix keeps Content mounted at data-state="closed" for exactly as long as
+ * this animation runs, which is what the reuse flight's post-close timer is
+ * tuned against.
+ */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+}
+
+.lightbox-overlay[data-state="open"] {
+  animation: lightbox-overlay-in var(--duration-base) ease-out both;
+}
+
+.lightbox-overlay[data-state="closed"] {
+  animation: lightbox-overlay-out var(--duration-base) ease-in both;
+}
+
+@keyframes lightbox-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.lightbox-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 61;
+  width: min(92vw, 1080px);
+  max-height: 88vh;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--line);
+  background: var(--color-surface);
+  box-shadow: 0 40px 80px -32px color-mix(in srgb, var(--color-bg) 85%, black);
+  outline: none;
+  overflow: hidden;
+}
+
+.lightbox-content[data-state="open"] {
+  animation: lightbox-in var(--duration-slow) var(--ease-out-expo) both;
+}
+
+.lightbox-content[data-state="closed"] {
+  animation: lightbox-out var(--duration-base) var(--ease-out-expo) both;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes lightbox-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+}
+
+@keyframes lightbox-in-reduced {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lightbox-out-reduced {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.lightbox-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-height: 88vh;
+}
+
+@media (min-width: 768px) {
+  .lightbox-body {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+.lightbox-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  max-height: 88vh;
+  background: color-mix(in srgb, var(--color-bg) 88%, black);
+  overflow: hidden;
+}
+
+.lightbox-media-el {
+  max-width: 100%;
+  max-height: 88vh;
+}
+
+video.lightbox-media-el {
+  width: auto;
+  height: auto;
+}
+
+/*
+ * Boundary cue for no-wrap nav: the arrow at each end is always dimmed and
+ * disabled (works for keyboard too), and a swipe past that end additionally
+ * gets a brief rubber-band settle so it doesn't read as a dead gesture.
+ */
+.lightbox-media[data-edge-bump="start"] {
+  animation: lightbox-edge-start 260ms var(--ease-spring);
+}
+
+.lightbox-media[data-edge-bump="end"] {
+  animation: lightbox-edge-end 260ms var(--ease-spring);
+}
+
+@keyframes lightbox-edge-start {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(28px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes lightbox-edge-end {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-28px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  color: var(--color-ink);
+  transition:
+    opacity var(--duration-base) ease,
+    background-color var(--duration-base) ease;
+}
+
+.lightbox-nav:hover:not(:disabled) {
+  background: var(--color-raised);
+}
+
+.lightbox-nav:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.lightbox-nav-prev {
+  left: 16px;
+}
+
+.lightbox-nav-next {
+  right: 16px;
+}
+
+.lightbox-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-left: 1px solid var(--line);
+  overflow-y: auto;
+}
+
+.lightbox-prompt {
+  border-left: 2px solid color-mix(in srgb, var(--tone, var(--color-accent-fill)) 65%, transparent);
+  padding-left: 10px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.lightbox-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.lightbox-meta dt {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.lightbox-meta dd {
+  font-size: 0.8125rem;
+  color: var(--color-ink);
+}
+
+.lightbox-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: auto;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  height: 32px;
+  width: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--line);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  transition:
+    color var(--duration-base) ease,
+    background-color var(--duration-base) ease;
+}
+
+.lightbox-close:hover {
+  color: var(--color-ink);
+  background: var(--color-raised);
+}
+
 .disclosure-content {
   display: grid;
   grid-template-rows: 0fr;
@@ -363,5 +637,23 @@ body {
   .press-spring:active,
   .disclosure-content {
     transition-duration: 0.01ms;
+  }
+
+  .lightbox-overlay[data-state="open"],
+  .lightbox-overlay[data-state="closed"] {
+    animation-duration: var(--duration-fast);
+  }
+
+  .lightbox-content[data-state="open"] {
+    animation: lightbox-in-reduced var(--duration-fast) linear both;
+  }
+
+  .lightbox-content[data-state="closed"] {
+    animation: lightbox-out-reduced var(--duration-fast) linear both;
+  }
+
+  /* Boundary cue keeps its dim/disabled arrow; the rubber-band settle drops. */
+  .lightbox-media[data-edge-bump] {
+    animation: none;
   }
 }

@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useToneLink } from "@/components/studio/ToneLink";
 
-export function MediaCard({ item }) {
+export function MediaCard({ item, onOpen }) {
   const [loaded, setLoaded] = useState(false);
   const isVideo = item.type === "video";
   const link = useToneLink().linkProps(item);
+  const cardRef = useRef(null);
+
+  const handleOpen = () => onOpen?.(cardRef.current);
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleOpen();
+    }
+  };
 
   return (
     <div
+      ref={cardRef}
       {...link}
+      role="button"
+      aria-label={`Open ${item.prompt}`}
+      aria-haspopup="dialog"
+      tabIndex={0}
+      onClick={handleOpen}
+      onKeyDown={handleKeyDown}
       className={`relative overflow-hidden rounded-card-lg border border-line bg-raised ${link.className}`}
       style={{ aspectRatio: `${item.width} / ${item.height}`, ...link.style }}
-      tabIndex={0}
     >
       {isVideo ? (
         <video

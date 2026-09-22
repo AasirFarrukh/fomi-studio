@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { HistoryTray } from "@/components/studio/HistoryTray";
 import { Composer } from "@/components/studio/Composer";
@@ -13,6 +14,13 @@ import {
   imageModels as fallbackImageModels,
   videoModels as fallbackVideoModels,
 } from "@/data/models";
+
+// No reason the dialog primitives ship in the main bundle — only fetched
+// once someone actually opens a piece of media.
+const Lightbox = dynamic(
+  () => import("@/components/studio/Lightbox").then((mod) => mod.Lightbox),
+  { ssr: false },
+);
 
 function itemsToGeneration(items) {
   if (!items || items.length === 0) return null;
@@ -40,6 +48,8 @@ export function Studio() {
   const [modelId, setModelId] = useState(fallbackImageModels[0].id);
   const [aspectRatio, setAspectRatio] = useState(fallbackImageModels[0].ratios[0]);
   const [generations, setGenerations] = useState([]);
+  const [lightboxData, setLightboxData] = useState(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const promptRef = useRef(null);
   const { status, error, progress, stage, generate, retry, cancel } = useGeneration();
@@ -142,6 +152,19 @@ export function Studio() {
     promptRef.current?.focus();
   }, []);
 
+  const handleOpenLightbox = useCallback((generation, item, sourceEl) => {
+    setLightboxData({ generation, itemId: item.id, sourceEl });
+    setLightboxOpen(true);
+  }, []);
+
+  const handleLightboxOpenChange = useCallback((nextOpen) => {
+    setLightboxOpen(nextOpen);
+  }, []);
+
+  const handleLightboxExited = useCallback(() => {
+    setLightboxData(null);
+  }, []);
+
   const handleRetry = useCallback(async () => {
     const items = await retry();
     const generation = itemsToGeneration(items);
@@ -189,6 +212,7 @@ export function Studio() {
               error={error}
               onRetry={handleRetry}
               onReuse={handleReuse}
+              onOpenLightbox={handleOpenLightbox}
               pendingCount={count}
               mode={mode}
             />
@@ -196,6 +220,15 @@ export function Studio() {
         </div>
       </div>
       <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
+      {lightboxData ? (
+        <Lightbox
+          data={lightboxData}
+          open={lightboxOpen}
+          onOpenChange={handleLightboxOpenChange}
+          onReuse={handleReuse}
+          onExited={handleLightboxExited}
+        />
+      ) : null}
     </ToneLinkProvider>
   );
 }
