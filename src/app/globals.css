@@ -1,1 +1,189 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fill: var(--accent-fill);
+  --color-on-accent: var(--on-accent);
+  --color-tone: var(--tone);
+
+  --radius-panel: 28px;
+  --radius-card-lg: 20px;
+  --radius-card: 16px;
+  --radius-chip: 9999px;
+
+  --font-ui: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bricolage);
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --duration-develop: 700ms;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(
+    0,
+    0.418 6.4%,
+    0.749 12.6%,
+    0.964 18.9%,
+    1.046 22.5%,
+    1.098 26.1%,
+    1.123 29.3%,
+    1.126 32.4%,
+    1.108 36.2%,
+    1.041 42.1%,
+    1.007 45.9%,
+    0.984 50.2%,
+    0.974 55.2%,
+    0.976 62%,
+    1 100%
+  );
+}
+
+/*
+ * Darkroom (dark) is the fallback; Paper (light) is opted into via
+ * [data-theme="light"]. Both branches are written explicitly so the
+ * inline bootstrap script (see layout.js) only ever has to set one
+ * attribute before first paint.
+ */
+:root,
+[data-theme="dark"] {
+  --bg: #12100e;
+  --surface: #1a1714;
+  --raised: #231f1b;
+  --line: #2e2924;
+  --ink: #f3eee6;
+  --muted: #a39a8e;
+  --on-accent: #12100e;
+  --ember-fill: #ff6a3d;
+  --ember-ink: #ff6a3d;
+  --teal-fill: #46c2b0;
+  --teal-ink: #46c2b0;
+}
+
+[data-theme="light"] {
+  --bg: #f2eee6;
+  --surface: #fbf8f3;
+  --raised: #ffffff;
+  --line: #e2dbcf;
+  --ink: #1c1916;
+  --muted: #6b6358;
+  --on-accent: #1c1916;
+  --ember-fill: #ff6a3d;
+  --ember-ink: #b93e17;
+  --teal-fill: #46c2b0;
+  --teal-ink: #17766a;
+}
+
+/*
+ * Mode drives --accent (text/icon/ring, theme-corrected for legibility)
+ * separately from --accent-fill (solid button backgrounds, always the
+ * vivid hue since the label sitting on top is --on-accent, not the page
+ * background). --tone defaults to the same hue but is reassigned per
+ * card to the generation's dominant color.
+ */
+[data-mode="image"] {
+  --accent: var(--ember-ink);
+  --accent-fill: var(--ember-fill);
+  --tone: var(--ember-fill);
+}
+
+[data-mode="video"] {
+  --accent: var(--teal-ink);
+  --accent-fill: var(--teal-fill);
+  --tone: var(--teal-fill);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-tone) 35%, transparent);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-ui), sans-serif;
+}
+
+.font-data {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.shadow-panel {
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, var(--color-ink) 6%, transparent) inset,
+    0 24px 48px -24px color-mix(in srgb, var(--color-bg) 80%, black);
+}
+
+.shadow-card {
+  box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--color-bg) 75%, black);
+}
+
+.ring-tone {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-tone) 45%, transparent);
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 50;
+  mix-blend-mode: overlay;
+}
+
+@keyframes develop {
+  0% {
+    opacity: 0;
+    filter: saturate(0.15) blur(10px) contrast(0.92);
+    transform: scale(1.02);
+  }
+  55% {
+    filter: saturate(0.6) blur(2px) contrast(0.97);
+  }
+  100% {
+    opacity: 1;
+    filter: saturate(1) blur(0) contrast(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes develop-reduced {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.media-develop {
+  animation: develop var(--duration-develop) var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-develop {
+    animation: develop-reduced var(--duration-base) linear both;
+  }
+}
