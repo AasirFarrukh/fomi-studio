@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 
 export function MediaCard({ item }) {
+  const [loaded, setLoaded] = useState(false);
   const isVideo = item.type === "video";
 
   return (
@@ -11,13 +15,14 @@ export function MediaCard({ item }) {
     >
       {isVideo ? (
         <video
-          className="media-develop h-full w-full object-cover"
+          className={`h-full w-full object-cover ${loaded ? "media-develop" : "opacity-0"}`}
           src={item.src}
           poster={item.poster}
           autoPlay
           muted
           loop
           playsInline
+          onLoadedData={() => setLoaded(true)}
         />
       ) : (
         <Image
@@ -25,7 +30,8 @@ export function MediaCard({ item }) {
           alt={item.prompt}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-          className="media-develop object-cover"
+          className={`object-cover ${loaded ? "media-develop" : "opacity-0"}`}
+          onLoad={() => setLoaded(true)}
         />
       )}
     </div>
