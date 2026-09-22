@@ -6,15 +6,16 @@ export const ThemeContext = createContext(null);
 
 const STORAGE_KEY = "fomi-theme";
 
+function getInitialTheme() {
+  if (typeof document === "undefined") return "dark";
+  const current = document.documentElement.getAttribute("data-theme");
+  return current === "light" || current === "dark" ? current : "dark";
+}
+
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState("dark");
+  const [theme, setThemeState] = useState(getInitialTheme);
 
   useEffect(() => {
-    const current = document.documentElement.getAttribute("data-theme");
-    if (current === "light" || current === "dark") {
-      setThemeState(current);
-    }
-
     const media = window.matchMedia("(prefers-color-scheme: light)");
     const followSystem = (event) => {
       if (localStorage.getItem(STORAGE_KEY)) return;
