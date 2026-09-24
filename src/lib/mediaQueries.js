@@ -6,3 +6,6 @@ export const RAIL_QUERY = "(min-width: 640px) and (max-width: 1023.98px)";
 export const COARSE_POINTER_QUERY = "(pointer: coarse)";
 
 export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+// Feed clips only move while a hovering pointer or keyboard focus asks them to.
+export const CLIP_PREVIEW_QUERY = "(hover: hover) and (prefers-reduced-motion: no-preference)";
