@@ -315,6 +315,60 @@ body {
 }
 
 /*
+ * Generate ignite: a comet traced along the button's own outline. Each rect is
+ * normalised to pathLength 100, so a dash offset of -100 is exactly one lap at
+ * constant speed regardless of the button's width. The head sits on the tail's
+ * leading 10 units (a 20-unit lead = 20% of the lap, hence the negative delay).
+ */
+.orbit-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--color-accent);
+}
+
+.orbit-border rect {
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.orbit-track {
+  opacity: 0.22;
+}
+
+.orbit-tail {
+  stroke-dasharray: 30 70;
+  opacity: 0.35;
+  animation: orbit-lap 2400ms linear infinite;
+}
+
+.orbit-head {
+  stroke-dasharray: 10 90;
+  filter: drop-shadow(0 0 3px currentColor);
+  animation: orbit-lap 2400ms linear -480ms infinite;
+}
+
+@keyframes orbit-lap {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@keyframes orbit-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/*
  * The reuse guard falls back to this plain fade when the source card can't be
  * measured (e.g. scrolled away) — always opacity-only, per the reduced-motion
  * fallback, so it never needs its own reduced-motion override.
@@ -727,6 +781,16 @@ video.lightbox-media-el {
   /* Boundary cue keeps its dim/disabled arrow; the rubber-band settle drops. */
   .lightbox-media[data-edge-bump] {
     animation: none;
+  }
+
+  .orbit-tail {
+    display: none;
+  }
+
+  .orbit-head {
+    stroke-dasharray: none;
+    filter: none;
+    animation: orbit-pulse 2400ms ease-in-out infinite;
   }
 
   .quicklook-backdrop {

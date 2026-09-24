@@ -61,7 +61,8 @@ export function Composer({
         <Button
           variant="primary"
           className="press-spring w-full"
-          disabled={isLoading || prompt.trim().length === 0}
+          busy={isLoading}
+          disabled={prompt.trim().length === 0}
           onClick={onSubmit}
         >
           {isLoading ? "Developing…" : "Generate"}
