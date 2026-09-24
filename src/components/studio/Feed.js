@@ -17,11 +17,11 @@ export function Feed({
   const showEmpty = !hasContent && status !== "loading" && status !== "error";
 
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className="@container/feed flex min-w-0 flex-1 flex-col gap-6">
       {status === "loading" ? (
         <div className="flex flex-col gap-3 rounded-panel border border-line bg-surface px-4 py-4">
           <p className="text-sm text-muted">{stage}…</p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="media-grid">
             {Array.from({ length: pendingCount }).map((_, index) => (
               <div
                 key={index}
@@ -51,7 +51,7 @@ export function Feed({
         <div
           key={generation.generationId}
           id={`gen-${generation.generationId}`}
-          className="flex scroll-mt-6 flex-col gap-3"
+          className="generation flex scroll-mt-6 flex-col gap-3"
         >
           <PromptCard generation={generation} onReuse={onReuse} />
           <MediaGrid

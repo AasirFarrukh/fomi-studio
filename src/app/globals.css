@@ -192,6 +192,78 @@ body {
 }
 
 /*
+ * Column count follows the feed's own width, not the viewport, so the tablet
+ * rail opening or closing reflows the grid in place. Phones are pinned at two
+ * and desktop at the mockup's four; the extra fifth and sixth columns only
+ * unlock inside the large-screen frame, once the feed can hold them.
+ */
+.media-grid,
+.generation {
+  --cols: 2;
+  --prompt-span: 1;
+}
+
+.media-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  @container feed (min-width: 30rem) {
+    .media-grid,
+    .generation {
+      --cols: 3;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .media-grid,
+  .generation {
+    --cols: 4;
+  }
+}
+
+@media (min-width: 1536px) {
+  @container feed (min-width: 62rem) {
+    .media-grid,
+    .generation {
+      --cols: 5;
+    }
+
+    /*
+     * A run is only ever 1-8 items, so extra columns alone would leave a ragged
+     * empty band. Instead the prompt card joins the row as its first cell (as in
+     * the mockup) — one column at five-up, two at six-up — which fills the row
+     * and holds the prompt to a readable measure instead of a full-width line.
+     */
+    .generation {
+      display: grid;
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+      align-items: start;
+      gap: 12px;
+    }
+
+    .generation > .media-grid {
+      display: contents;
+    }
+
+    .generation > .prompt-card {
+      grid-column: span var(--prompt-span);
+    }
+  }
+
+  @container feed (min-width: 80rem) {
+    .media-grid,
+    .generation {
+      --cols: 6;
+      --prompt-span: 2;
+    }
+  }
+}
+
+/*
  * --tone only ever buys glow, ring and selection. "active" is the item under
  * the pointer or focus; "linked" is the rest of that generation wherever else
  * it appears, ringed in the same tone but without the glow.

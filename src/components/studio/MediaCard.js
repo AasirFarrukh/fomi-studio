@@ -74,7 +74,7 @@ export function MediaCard({ item, onOpen }) {
           src={item.src}
           alt={item.prompt}
           fill
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          sizes="(min-width: 1536px) 16vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
           className={`object-cover ${loaded ? "media-develop" : "opacity-0"}`}
           onLoad={() => setLoaded(true)}
         />

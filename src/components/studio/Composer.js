@@ -40,7 +40,7 @@ export function Composer({
   return (
     <section
       aria-label="Composer"
-      className="flex w-full flex-col gap-4 rounded-panel border border-line bg-surface p-4 shadow-panel md:w-[340px]"
+      className="flex w-full flex-col gap-4 rounded-panel border border-line bg-surface p-4 shadow-panel md:w-[340px] md:shrink-0 2xl:w-[400px]"
     >
       <Tabs options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
 
