@@ -18,7 +18,7 @@ export function Disclosure({ title, children, defaultOpen = false }) {
         {title}
         <svg
           viewBox="0 0 12 12"
-          className={`h-3 w-3 transition-transform duration-base ${open ? "rotate-180" : ""}`}
+          className={`h-3 w-3 transition-transform duration-base motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         >
           <path

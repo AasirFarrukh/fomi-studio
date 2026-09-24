@@ -13,7 +13,7 @@ export function GenerationStatusBar({ status, progress, stage }) {
         style={{ opacity: isLoading ? 1 : 0.35 }}
       >
         <div
-          className="h-full rounded-chip bg-accent-fill transition-[width] duration-base ease-out"
+          className="h-full rounded-chip bg-accent-fill transition-[width] duration-base ease-out motion-reduce:transition-none"
           style={{ width: `${isLoading ? Math.round(progress * 100) : 0}%` }}
         />
       </div>
