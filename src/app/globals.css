@@ -456,6 +456,13 @@ body {
     );
   }
 
+  /* Keyboard focus scrolls whatever it lands on clear of the docked bars. */
+  html {
+    scroll-padding-bottom: calc(
+      var(--tab-bar-h) + env(safe-area-inset-bottom) + var(--dock-gap) + var(--composer-bar-h) + 8px
+    );
+  }
+
   .composer-bar {
     bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom) + var(--dock-gap));
   }

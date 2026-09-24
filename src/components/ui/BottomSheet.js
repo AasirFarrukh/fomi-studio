@@ -13,6 +13,7 @@ const DISMISS_VELOCITY = 0.5;
 export function BottomSheet({ open, onOpenChange, title, container, children }) {
   const contentRef = useRef(null);
   const dragRef = useRef(null);
+  const openerRef = useRef(null);
 
   function handlePointerDown(event) {
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -48,7 +49,22 @@ export function BottomSheet({ open, onOpenChange, title, container, children }) 
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal container={container}>
         <Dialog.Overlay className="sheet-overlay" />
-        <Dialog.Content ref={contentRef} className="sheet-content" aria-describedby={undefined}>
+        {/*
+          Opened from outside Radix (no Dialog.Trigger), so Radix has nothing
+          to hand focus back to on close; remember the opener ourselves.
+        */}
+        <Dialog.Content
+          ref={contentRef}
+          className="sheet-content"
+          aria-describedby={undefined}
+          onOpenAutoFocus={() => {
+            openerRef.current = document.activeElement;
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            if (openerRef.current?.isConnected) openerRef.current.focus({ preventScroll: true });
+          }}
+        >
           <Dialog.Title className="sr-only">{title}</Dialog.Title>
           <div
             aria-hidden="true"
