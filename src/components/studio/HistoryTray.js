@@ -4,7 +4,12 @@ import { memo, useRef, useState } from "react";
 import Image from "next/image";
 import { useToneLink } from "@/components/studio/ToneLink";
 
-const HistoryThumb = memo(function HistoryThumb({ item }) {
+// A phone's tray shows about five thumbnails before it scrolls. They paint well
+// before the feed finishes developing, so one of them is often the LCP; lazy
+// loading would hold them back until after layout.
+const EAGER_THUMBS = 5;
+
+const HistoryThumb = memo(function HistoryThumb({ item, eager }) {
   const toneLink = useToneLink();
   const link = toneLink.linkProps(item);
   const pointerTypeRef = useRef("mouse");
@@ -27,6 +32,7 @@ const HistoryThumb = memo(function HistoryThumb({ item }) {
         alt=""
         fill
         sizes="80px"
+        loading={eager ? "eager" : "lazy"}
         className="object-cover"
       />
     </a>
@@ -72,8 +78,8 @@ export const HistoryTray = memo(function HistoryTray({ generations }) {
             : "flex-nowrap overflow-x-auto max-sm:snap-x max-sm:snap-mandatory max-sm:scroll-px-3"
         }`}
       >
-        {items.map((item) => (
-          <HistoryThumb key={item.id} item={item} />
+        {items.map((item, index) => (
+          <HistoryThumb key={item.id} item={item} eager={index < EAGER_THUMBS} />
         ))}
       </div>
     </section>
