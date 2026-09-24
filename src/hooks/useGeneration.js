@@ -75,7 +75,7 @@ export function useGeneration() {
       } catch (err) {
         clearProgressTimer();
         if (err.name === "AbortError") {
-          setStatus("idle");
+          setStatus("cancelled");
           return null;
         }
         setError(err.message);
@@ -94,7 +94,7 @@ export function useGeneration() {
   const cancel = useCallback(() => {
     abortRef.current?.abort();
     clearProgressTimer();
-    setStatus("idle");
+    setStatus("cancelled");
     setProgress(0);
   }, [clearProgressTimer]);
 

@@ -12,6 +12,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { ChevronIcon } from "@/components/ui/icons";
 import { Feed } from "@/components/studio/Feed";
 import { RecipeFlight } from "@/components/studio/RecipeFlight";
+import { GenerationAnnouncer } from "@/components/studio/GenerationAnnouncer";
 import { ToneLinkProvider } from "@/components/studio/ToneLink";
 import { QuickLookProvider } from "@/components/studio/QuickLook";
 import { useGeneration } from "@/hooks/useGeneration";
@@ -73,7 +74,7 @@ export function Studio() {
   if (!isCompact && sheetOpen) setSheetOpen(false);
 
   const promptRef = useRef(null);
-  const { status, error, progress, stage, generate, retry, cancel } = useGeneration();
+  const { status, items, error, progress, stage, generate, retry, cancel } = useGeneration();
   const { flight, launch, land, landedPulse } = useRecipeFlight(promptRef);
 
   useEffect(() => {
@@ -268,6 +269,7 @@ export function Studio() {
             stage={stage}
             onHomeClick={handleHomeClick}
           />
+          <GenerationAnnouncer status={status} stage={stage} items={items} error={error} />
           <div className="studio-body page-frame flex flex-1 flex-col gap-4 py-4">
             <HistoryTray generations={generations} />
             <div className="flex flex-1 flex-col gap-4 sm:flex-row">
