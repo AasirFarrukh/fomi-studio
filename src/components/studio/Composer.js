@@ -60,22 +60,16 @@ export function Composer({
         />
         <Button
           variant="primary"
-          className="press-spring w-full"
+          className="press-spring group w-full"
           busy={isLoading}
-          disabled={prompt.trim().length === 0}
-          onClick={onSubmit}
+          disabled={!isLoading && prompt.trim().length === 0}
+          onClick={isLoading ? onCancel : onSubmit}
+          aria-label={isLoading ? "Developing… — cancel" : undefined}
+          title={isLoading ? "Cancel this generation" : undefined}
         >
           {isLoading ? "Developing…" : "Generate"}
+          {isLoading ? <CancelGlyph /> : null}
         </Button>
-        {isLoading ? (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-xs text-muted underline-offset-2 hover:underline"
-          >
-            Cancel
-          </button>
-        ) : null}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -107,5 +101,17 @@ export function Composer({
         Saved style presets will appear here once you create your first one.
       </Disclosure>
     </section>
+  );
+}
+
+function CancelGlyph() {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      className="h-3 w-3 text-muted transition-colors duration-base group-hover:text-ink"
+      aria-hidden="true"
+    >
+      <path d="M3 3l6 6M9 3 3 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
   );
 }
