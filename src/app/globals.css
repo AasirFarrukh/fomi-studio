@@ -511,12 +511,14 @@ body {
 /*
  * Composer host. Desktop: a fixed-width panel that stretches with the feed.
  * Tablet: a sticky, viewport-tall rail — 64px of icons until opened, then the
- * full composer. The composer keeps its open width while the host clips it, so
- * widening reveals it like a drawer rather than reflowing its controls; its
- * hide is delayed until the narrowing finishes so it never blinks out early.
+ * full composer. The width itself never transitions: the feed reflows once and
+ * useRailMotion reveals the panel edge with clip-path while FLIPping the tiles
+ * (see hooks/useRailMotion.js). The composer keeps its open width, so it is
+ * uncovered like a drawer rather than reflowed; its hide waits out the reveal.
  */
 .composer-host {
   --composer-w: 340px;
+  --rail-w: 64px;
   position: relative;
   flex-shrink: 0;
   width: var(--composer-w);
@@ -540,7 +542,6 @@ body {
     top: 16px;
     align-self: flex-start;
     height: calc(100dvh - 32px);
-    transition: width var(--duration-slow) var(--ease-out-expo);
   }
 
   .composer-rail {
@@ -566,7 +567,14 @@ body {
   }
 
   .composer-host:not([data-expanded]) {
-    width: 64px;
+    width: var(--rail-w);
+  }
+
+  /* Closing: keep the open panel painted (and clipped down) while taking up
+     only the rail's footprint, so the feed has already reflowed underneath. */
+  .composer-host[data-closing] {
+    width: var(--composer-w);
+    margin-right: calc(var(--rail-w) - var(--composer-w));
   }
 
   .composer-host:not([data-expanded]) .composer-full {
@@ -1206,7 +1214,6 @@ video.lightbox-media-el {
   }
 
   .tone-target,
-  .composer-host,
   .composer-full,
   .segment-indicator,
   .nav-indicator,

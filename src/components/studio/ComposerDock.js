@@ -15,6 +15,7 @@ function igniteLabel(isLoading, hasDraft) {
 // 640 and 1024 it folds into an icon rail (see .composer-host in globals.css)
 // that keeps generate/cancel within reach while the feed takes the width.
 export const ComposerDock = memo(function ComposerDock({
+  hostRef,
   composerProps,
   showComposer,
   expanded,
@@ -33,6 +34,7 @@ export const ComposerDock = memo(function ComposerDock({
 
   return (
     <div
+      ref={hostRef}
       className="composer-host rounded-panel border border-line bg-surface shadow-panel max-sm:hidden"
       data-expanded={expanded || undefined}
     >

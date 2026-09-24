@@ -16,6 +16,7 @@ import { ToneLinkProvider } from "@/components/studio/ToneLink";
 import { QuickLookProvider } from "@/components/studio/QuickLook";
 import { useGeneration } from "@/hooks/useGeneration";
 import { useRecipeFlight } from "@/hooks/useRecipeFlight";
+import { useRailMotion } from "@/hooks/useRailMotion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { COMPACT_QUERY, RAIL_QUERY, REDUCED_MOTION_QUERY } from "@/lib/mediaQueries";
 import { readDurationMs } from "@/lib/motion";
@@ -75,6 +76,17 @@ export function Studio({ initialGenerations }) {
   const promptRef = useRef(null);
   const { status, items, error, progress, stage, generate, retry, cancel } = useGeneration();
   const { flight, launch, land, landedPulse } = useRecipeFlight(promptRef);
+  const dockRef = useRef(null);
+  const feedRef = useRef(null);
+  const captureRail = useRailMotion(railExpanded, dockRef, feedRef);
+
+  const setRailOpen = useCallback(
+    (next) => {
+      captureRail();
+      setRailExpanded(next);
+    },
+    [captureRail],
+  );
 
   const currentModels = MODELS[mode];
 
@@ -142,11 +154,11 @@ export function Studio({ initialGenerations }) {
       return true;
     }
     if (isRail && !railExpanded) {
-      setRailExpanded(true);
+      setRailOpen(true);
       return true;
     }
     return false;
-  }, [isCompact, isRail, sheetOpen, railExpanded]);
+  }, [isCompact, isRail, sheetOpen, railExpanded, setRailOpen]);
 
   const handleReuse = useCallback(
     (generation, sourceEl) => {
@@ -155,7 +167,7 @@ export function Studio({ initialGenerations }) {
         fly();
         return;
       }
-      // The sheet rises and the rail widens over --duration-slow; wait it out so
+      // The sheet rises and the rail panel opens over --duration-slow; wait it out so
       // the flight measures the prompt box where it finally rests.
       const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches;
       window.setTimeout(
@@ -167,11 +179,11 @@ export function Studio({ initialGenerations }) {
   );
 
   const handleExpandRail = useCallback(() => {
-    setRailExpanded(true);
+    setRailOpen(true);
     requestAnimationFrame(() => promptRef.current?.focus({ preventScroll: true }));
-  }, []);
+  }, [setRailOpen]);
 
-  const handleCollapseRail = useCallback(() => setRailExpanded(false), []);
+  const handleCollapseRail = useCallback(() => setRailOpen(false), [setRailOpen]);
 
   const handleHomeClick = useCallback(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -254,6 +266,7 @@ export function Studio({ initialGenerations }) {
             <HistoryTray generations={generations} />
             <div className="flex flex-1 flex-col gap-4 sm:flex-row">
               <ComposerDock
+                hostRef={dockRef}
                 composerProps={composerProps}
                 showComposer={!isCompact}
                 expanded={railExpanded}
@@ -262,6 +275,7 @@ export function Studio({ initialGenerations }) {
                 onIgnite={handleIgnite}
               />
               <Feed
+                feedRef={feedRef}
                 generations={generations}
                 status={status}
                 stage={stage}

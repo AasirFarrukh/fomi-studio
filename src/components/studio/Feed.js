@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/studio/EmptyState";
 const FIRST_ROW = 4;
 
 export const Feed = memo(function Feed({
+  feedRef,
   generations,
   status,
   stage,
@@ -22,9 +23,9 @@ export const Feed = memo(function Feed({
   const showEmpty = !hasContent && status !== "loading" && status !== "error";
 
   return (
-    <div className="@container/feed flex min-w-0 flex-1 flex-col gap-6">
+    <div ref={feedRef} className="@container/feed flex min-w-0 flex-1 flex-col gap-6">
       {status === "loading" ? (
-        <div className="flex flex-col gap-3 rounded-panel border border-line bg-surface px-4 py-4">
+        <div data-feed-block className="flex flex-col gap-3 rounded-panel border border-line bg-surface px-4 py-4">
           <p className="text-sm text-muted">{stage}…</p>
           <div className="media-grid">
             {Array.from({ length: pendingCount }).map((_, index) => (
@@ -38,7 +39,7 @@ export const Feed = memo(function Feed({
       ) : null}
 
       {status === "error" ? (
-        <div className="flex items-center justify-between gap-4 rounded-panel border border-line bg-surface px-4 py-4">
+        <div data-feed-block className="flex items-center justify-between gap-4 rounded-panel border border-line bg-surface px-4 py-4">
           <p className="text-sm text-ink">{error}</p>
           <button
             type="button"
