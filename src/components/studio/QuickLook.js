@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { COARSE_POINTER_QUERY } from "@/lib/mediaQueries";
 
 const QuickLookContext = createContext(null);
 
@@ -20,11 +22,17 @@ export function QuickLookProvider({ children }) {
   const targetRef = useRef(null);
   const [preview, setPreview] = useState(null);
 
+  // Hold-Space has no touch equivalent, and a tap already opens the full
+  // Lightbox — so on a coarse primary pointer the peek simply isn't offered.
+  const coarse = useMediaQuery(COARSE_POINTER_QUERY);
+
   const setTarget = useCallback((item, element) => {
     targetRef.current = item && element ? { item, element } : null;
   }, []);
 
   useEffect(() => {
+    if (coarse) return undefined;
+
     function handleKeyDown(event) {
       if (event.code !== "Space" || event.repeat) return;
 
@@ -61,12 +69,12 @@ export function QuickLookProvider({ children }) {
       window.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("blur", dismiss);
     };
-  }, []);
+  }, [coarse]);
 
   return (
-    <QuickLookContext.Provider value={setTarget}>
+    <QuickLookContext.Provider value={coarse ? null : setTarget}>
       {children}
-      {preview ? <QuickLookOverlay item={preview.item} /> : null}
+      {preview && !coarse ? <QuickLookOverlay item={preview.item} /> : null}
     </QuickLookContext.Provider>
   );
 }
