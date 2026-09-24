@@ -198,16 +198,16 @@ body {
  * and desktop at the mockup's four; the extra fifth and sixth columns only
  * unlock inside the large-screen frame, once the feed can hold them.
  *
- * A run is only ever 1-8 items, so at three, five or six columns a four-item
- * run would leave an orphan or a ragged empty band. There the prompt card
- * joins the row as its first cell instead (as in the mockup) — spanning two
- * columns at three- and six-up, one at five-up — which squares the run off and
- * holds the prompt to a readable measure instead of a full-width line.
+ * A run is only ever 1-8 items, so at three, five or six columns it would
+ * usually end in an orphan or a ragged empty band. There the prompt card joins
+ * the row as its first cell instead (as in the mockup), spanning exactly the
+ * columns the run leaves empty — cols - (count mod cols) — so every run squares
+ * off and the prompt keeps a readable measure. A run that already fills its
+ * rows gets a full-width span, which is simply the prompt on top.
  */
 .media-grid,
 .generation {
   --cols: 2;
-  --prompt-span: 1;
 }
 
 .media-grid {
@@ -221,7 +221,6 @@ body {
     .media-grid,
     .generation {
       --cols: 3;
-      --prompt-span: 2;
     }
 
     .generation {
@@ -234,7 +233,7 @@ body {
     }
 
     .generation > .prompt-card {
-      grid-column: span var(--prompt-span);
+      grid-column: span calc(var(--cols) - mod(var(--count), var(--cols)));
       align-self: stretch;
       align-content: space-between;
     }
@@ -253,7 +252,6 @@ body {
     .media-grid,
     .generation {
       --cols: 5;
-      --prompt-span: 1;
     }
 
     .generation {
@@ -266,7 +264,7 @@ body {
     }
 
     .generation > .prompt-card {
-      grid-column: span var(--prompt-span);
+      grid-column: span calc(var(--cols) - mod(var(--count), var(--cols)));
       align-self: stretch;
       align-content: space-between;
     }
@@ -276,7 +274,6 @@ body {
     .media-grid,
     .generation {
       --cols: 6;
-      --prompt-span: 2;
     }
   }
 }

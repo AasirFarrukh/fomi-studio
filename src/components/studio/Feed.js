@@ -52,6 +52,7 @@ export function Feed({
           key={generation.generationId}
           id={`gen-${generation.generationId}`}
           className="generation flex scroll-mt-6 flex-col gap-3"
+          style={{ "--count": generation.items.length }}
         >
           <PromptCard generation={generation} onReuse={onReuse} />
           <MediaGrid
