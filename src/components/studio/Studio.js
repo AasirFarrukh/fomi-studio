@@ -18,6 +18,7 @@ import { useGeneration } from "@/hooks/useGeneration";
 import { useRecipeFlight } from "@/hooks/useRecipeFlight";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { COMPACT_QUERY, RAIL_QUERY, REDUCED_MOTION_QUERY } from "@/lib/mediaQueries";
+import { readDurationMs } from "@/lib/motion";
 import {
   imageModels as fallbackImageModels,
   videoModels as fallbackVideoModels,
@@ -29,10 +30,6 @@ const Lightbox = dynamic(
   () => import("@/components/studio/Lightbox").then((mod) => mod.Lightbox),
   { ssr: false },
 );
-
-// Mirrors --duration-slow: how long the sheet takes to rise and the rail to
-// widen, so a reuse flight measures the prompt box where it finally rests.
-const COMPOSER_REVEAL_MS = 320;
 
 function itemsToGeneration(items) {
   if (!items || items.length === 0) return null;
@@ -184,8 +181,13 @@ export function Studio() {
         fly();
         return;
       }
+      // The sheet rises and the rail widens over --duration-slow; wait it out so
+      // the flight measures the prompt box where it finally rests.
       const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-      window.setTimeout(() => requestAnimationFrame(fly), reduced ? 0 : COMPOSER_REVEAL_MS);
+      window.setTimeout(
+        () => requestAnimationFrame(fly),
+        reduced ? 0 : readDurationMs("--duration-slow"),
+      );
     },
     [launch, applyRecipe, revealComposer],
   );
