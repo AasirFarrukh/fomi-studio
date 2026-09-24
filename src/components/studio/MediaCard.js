@@ -80,7 +80,6 @@ export function MediaCard({ item, position, total, eager = false, onOpen }) {
         fill
         sizes={CARD_SIZES}
         loading={eager ? "eager" : "lazy"}
-        fetchPriority={eager ? "high" : undefined}
         className={`object-cover ${loaded ? "media-develop" : "opacity-0"}`}
         onLoad={() => setLoaded(true)}
       />
