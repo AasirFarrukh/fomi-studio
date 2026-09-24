@@ -200,19 +200,22 @@ body {
  *
  * A run is only ever 1-8 items, so at three, five or six columns it would
  * usually end in an orphan or a ragged empty band. There the prompt card joins
- * the row as its first cell instead (as in the mockup), spanning exactly the
- * columns the run leaves empty — cols - (count mod cols) — so every run squares
- * off and the prompt keeps a readable measure. A run that already fills its
- * rows gets a full-width span, which is simply the prompt on top.
+ * the row as its first cell instead (as in the mockup), spanning the columns
+ * the run leaves empty — cols - (count mod cols) — so every run squares off.
+ * At five or six columns that span is capped at two cells: past that the card
+ * is mostly empty, and a bare cell reads as spacing where a stretched one
+ * doesn't. A run that already fills its rows takes a row of its own, held to
+ * the same two-cell width.
  */
 .media-grid,
 .generation {
   --cols: 2;
+  --grid-gap: 12px;
 }
 
 .media-grid {
   display: grid;
-  gap: 12px;
+  gap: var(--grid-gap);
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
 }
 
@@ -264,7 +267,12 @@ body {
     }
 
     .generation > .prompt-card {
-      grid-column: span calc(var(--cols) - mod(var(--count), var(--cols)));
+      --tail: mod(var(--count), var(--cols));
+      grid-column: span
+        calc(
+          min(2, var(--cols) - var(--tail)) + (1 - sign(var(--tail))) * (var(--cols) - 2)
+        );
+      max-width: calc(2 * (100cqw - (var(--cols) - 1) * var(--grid-gap)) / var(--cols) + var(--grid-gap));
       align-self: stretch;
       align-content: space-between;
     }
