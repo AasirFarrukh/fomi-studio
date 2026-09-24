@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { IconButton } from "@/components/ui/IconButton";
 
-export function ThemeToggle() {
+export const ThemeToggle = memo(function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -50,4 +51,4 @@ export function ThemeToggle() {
       </span>
     </IconButton>
   );
-}
+});

@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { OrbitBorder } from "@/components/ui/OrbitBorder";
 import { ChevronIcon, SparkIcon } from "@/components/ui/icons";
 
 // Phones only: the composer's collapsed form, docked above the tab bar. It
 // mirrors the draft (or the run's stage) and opens the full composer sheet.
-export function ComposerBar({ mode, prompt, status, stage, open, onOpen }) {
+export const ComposerBar = memo(function ComposerBar({ mode, prompt, status, stage, open, onOpen }) {
   const isLoading = status === "loading";
   const draft = prompt.trim();
   const placeholder = mode === "video" ? "Describe the shot to develop…" : "Describe the image to develop…";
@@ -26,4 +27,4 @@ export function ComposerBar({ mode, prompt, status, stage, open, onOpen }) {
       {isLoading ? <OrbitBorder radius={24} /> : null}
     </button>
   );
-}
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { Composer } from "@/components/studio/Composer";
 import { IconButton } from "@/components/ui/IconButton";
 import { OrbitBorder } from "@/components/ui/OrbitBorder";
@@ -14,7 +14,7 @@ function igniteLabel(isLoading, hasDraft) {
 // The inline composer from tablet up. On desktop it is simply the panel; between
 // 640 and 1024 it folds into an icon rail (see .composer-host in globals.css)
 // that keeps generate/cancel within reach while the feed takes the width.
-export function ComposerDock({
+export const ComposerDock = memo(function ComposerDock({
   composerProps,
   showComposer,
   expanded,
@@ -67,4 +67,4 @@ export function ComposerDock({
       ) : null}
     </div>
   );
-}
+});

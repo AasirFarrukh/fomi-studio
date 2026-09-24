@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { LocalTime } from "@/components/ui/LocalTime";
 
-export function PromptCard({ generation, onReuse }) {
+export const PromptCard = memo(function PromptCard({ generation, onReuse }) {
   const promptRef = useRef(null);
 
   return (
@@ -27,4 +27,4 @@ export function PromptCard({ generation, onReuse }) {
       </div>
     </div>
   );
-}
+});

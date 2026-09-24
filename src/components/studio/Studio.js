@@ -211,24 +211,31 @@ export function Studio({ initialGenerations }) {
     }
   }, [retry]);
 
-  const composerProps = {
-    mode,
-    onModeChange: handleModeChange,
-    prompt,
-    onPromptChange: setPrompt,
-    promptRef,
-    count,
-    onCountChange: setCount,
-    aspectRatio,
-    onAspectRatioChange: setAspectRatio,
-    modelId,
-    onModelChange: handleModelChange,
-    models: currentModels,
-    status,
-    onSubmit: handleSubmit,
-    onCancel: cancel,
-    landedPulse,
-  };
+  const handleOpenSheet = useCallback(() => setSheetOpen(true), []);
+
+  // Stable between progress ticks, so the memoised dock, feed and tray sit out
+  // the ~220ms re-renders a run drives through the header.
+  const composerProps = useMemo(
+    () => ({
+      mode,
+      onModeChange: handleModeChange,
+      prompt,
+      onPromptChange: setPrompt,
+      promptRef,
+      count,
+      onCountChange: setCount,
+      aspectRatio,
+      onAspectRatioChange: setAspectRatio,
+      modelId,
+      onModelChange: handleModelChange,
+      models: currentModels,
+      status,
+      onSubmit: handleSubmit,
+      onCancel: cancel,
+      landedPulse,
+    }),
+    [mode, handleModeChange, prompt, count, aspectRatio, modelId, handleModelChange, currentModels, status, handleSubmit, cancel, landedPulse],
+  );
 
   return (
     <ToneLinkProvider>
@@ -273,7 +280,7 @@ export function Studio({ initialGenerations }) {
             status={status}
             stage={stage}
             open={sheetOpen}
-            onOpen={() => setSheetOpen(true)}
+            onOpen={handleOpenSheet}
           />
           {isCompact ? (
             <BottomSheet

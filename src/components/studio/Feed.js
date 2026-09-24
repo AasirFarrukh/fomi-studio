@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PromptCard } from "@/components/studio/PromptCard";
 import { MediaGrid } from "@/components/studio/MediaGrid";
 import { EmptyState } from "@/components/studio/EmptyState";
@@ -6,7 +7,7 @@ import { EmptyState } from "@/components/studio/EmptyState";
 // phones, four on desktop. Only those skip lazy loading.
 const FIRST_ROW = 4;
 
-export function Feed({
+export const Feed = memo(function Feed({
   generations,
   status,
   stage,
@@ -69,4 +70,4 @@ export function Feed({
       ))}
     </div>
   );
-}
+});

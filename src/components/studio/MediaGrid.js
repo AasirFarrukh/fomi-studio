@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { MediaCard } from "@/components/studio/MediaCard";
 
-export function MediaGrid({ items, generation, eagerCount = 0, onOpenLightbox }) {
+export const MediaGrid = memo(function MediaGrid({ items, generation, eagerCount = 0, onOpenLightbox }) {
   return (
     <div className="media-grid">
       {items.map((item, index) => (
@@ -15,4 +16,4 @@ export function MediaGrid({ items, generation, eagerCount = 0, onOpenLightbox })
       ))}
     </div>
   );
-}
+});

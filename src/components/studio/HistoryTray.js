@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import Image from "next/image";
 import { useToneLink } from "@/components/studio/ToneLink";
 
-function HistoryThumb({ item }) {
+const HistoryThumb = memo(function HistoryThumb({ item }) {
   const toneLink = useToneLink();
   const link = toneLink.linkProps(item);
   const pointerTypeRef = useRef("mouse");
@@ -31,9 +31,9 @@ function HistoryThumb({ item }) {
       />
     </a>
   );
-}
+});
 
-export function HistoryTray({ generations }) {
+export const HistoryTray = memo(function HistoryTray({ generations }) {
   const [expanded, setExpanded] = useState(false);
   const items = generations.flatMap((generation) => generation.items);
 
@@ -78,4 +78,4 @@ export function HistoryTray({ generations }) {
       </div>
     </section>
   );
-}
+});
