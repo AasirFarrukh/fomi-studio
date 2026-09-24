@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
+import { revealFrom } from "@/lib/themeReveal";
 
 export const ThemeContext = createContext(null);
 
@@ -37,9 +39,15 @@ export function ThemeProvider({ children }) {
     setThemeState(next);
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  }, [theme, setTheme]);
+  const toggleTheme = useCallback(
+    (origin) => {
+      revealFrom(origin, () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        flushSync(() => setTheme(current === "dark" ? "light" : "dark"));
+      });
+    },
+    [setTheme],
+  );
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

@@ -737,6 +737,17 @@ video.lightbox-media-el {
   color: var(--color-muted);
 }
 
+/*
+ * Theme reveal: the outgoing theme stays put underneath while the incoming one
+ * is clipped to a growing circle (see lib/themeReveal.js). The browser's default
+ * crossfade must be off or it would tint the circle's edge.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 .disclosure-content {
   display: grid;
   grid-template-rows: 0fr;

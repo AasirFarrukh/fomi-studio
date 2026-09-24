@@ -10,7 +10,10 @@ export function ThemeToggle() {
   return (
     <IconButton
       label={isDark ? "Switch to Paper theme" : "Switch to Darkroom theme"}
-      onClick={toggleTheme}
+      onClick={(event) => {
+        const { left, top, width, height } = event.currentTarget.getBoundingClientRect();
+        toggleTheme({ x: left + width / 2, y: top + height / 2 });
+      }}
       suppressHydrationWarning
     >
       <span className="relative block h-4 w-4">
