@@ -255,21 +255,21 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
                 <a
                   href={item.src}
                   download
-                  className="press-spring rounded-chip border border-line px-3 py-2 text-center text-xs font-medium text-ink transition-colors duration-base hover:bg-raised"
+                  className="press-spring flex items-center justify-center whitespace-nowrap rounded-chip border border-line px-2 py-2 text-xs font-medium text-ink transition-colors duration-base hover:bg-raised"
                 >
                   Download
                 </a>
                 <button
                   type="button"
                   onClick={handleCopyPrompt}
-                  className="press-spring rounded-chip border border-line px-3 py-2 text-xs font-medium text-ink transition-colors duration-base hover:bg-raised"
+                  className="press-spring flex items-center justify-center whitespace-nowrap rounded-chip border border-line px-2 py-2 text-xs font-medium text-ink transition-colors duration-base hover:bg-raised"
                 >
                   Copy prompt
                 </button>
                 <button
                   type="button"
                   onClick={handleReuse}
-                  className="press-spring rounded-chip border border-line px-3 py-2 text-xs font-medium text-accent transition-colors duration-base hover:bg-raised"
+                  className="press-spring flex items-center justify-center whitespace-nowrap rounded-chip border border-line px-2 py-2 text-xs font-medium text-accent transition-colors duration-base hover:bg-raised"
                 >
                   Reuse
                 </button>

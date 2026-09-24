@@ -792,7 +792,7 @@ body {
   left: 50%;
   z-index: 61;
   width: min(92vw, 1080px);
-  max-height: 88vh;
+  max-height: 88dvh;
   transform: translate(-50%, -50%);
   border-radius: var(--radius-panel);
   border: 1px solid var(--line);
@@ -850,15 +850,19 @@ body {
   }
 }
 
+/* Stacked on phones, where the details scroll under the media instead of clipping. */
 .lightbox-body {
   display: grid;
   grid-template-columns: 1fr;
-  max-height: 88vh;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 @media (min-width: 768px) {
   .lightbox-body {
     grid-template-columns: minmax(0, 1fr) 320px;
+    overflow-y: visible;
   }
 }
 
@@ -868,14 +872,14 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  max-height: 88vh;
+  max-height: 88dvh;
   background: color-mix(in srgb, var(--color-bg) 88%, black);
   overflow: hidden;
 }
 
 .lightbox-media-el {
   max-width: 100%;
-  max-height: 88vh;
+  max-height: 88dvh;
 }
 
 video.lightbox-media-el {
@@ -960,8 +964,15 @@ video.lightbox-media-el {
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
   overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .lightbox-panel {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
 }
 
 .lightbox-prompt {
