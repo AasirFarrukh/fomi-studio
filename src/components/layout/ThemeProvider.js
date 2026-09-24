@@ -2,7 +2,6 @@
 
 import { createContext, useCallback, useEffect, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import { revealFrom } from "@/lib/themeReveal";
 
 export const ThemeContext = createContext(null);
 
@@ -52,8 +51,11 @@ export function ThemeProvider({ children }) {
 
   const toggleTheme = useCallback(
     (origin) => {
-      revealFrom(origin, () => {
-        flushSync(() => setTheme(readTheme() === "dark" ? "light" : "dark"));
+      // The View Transitions reveal is only needed on a click, so it loads then.
+      import("@/lib/themeReveal").then(({ revealFrom }) => {
+        revealFrom(origin, () => {
+          flushSync(() => setTheme(readTheme() === "dark" ? "light" : "dark"));
+        });
       });
     },
     [setTheme],

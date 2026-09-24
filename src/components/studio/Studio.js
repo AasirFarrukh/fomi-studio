@@ -7,7 +7,6 @@ import { HistoryTray } from "@/components/studio/HistoryTray";
 import { Composer } from "@/components/studio/Composer";
 import { ComposerDock } from "@/components/studio/ComposerDock";
 import { ComposerBar } from "@/components/studio/ComposerBar";
-import { BottomSheet } from "@/components/ui/BottomSheet";
 import { IconButton } from "@/components/ui/IconButton";
 import { ChevronIcon } from "@/components/ui/icons";
 import { Feed } from "@/components/studio/Feed";
@@ -24,10 +23,15 @@ import { imageModels, videoModels } from "@/data/models";
 
 const MODELS = { image: imageModels, video: videoModels };
 
-// No reason the dialog primitives ship in the main bundle — only fetched
-// once someone actually opens a piece of media.
+// Neither dialog (nor the Radix primitives under them) ships in the main
+// bundle: the lightbox loads when media is first opened, the sheet only on
+// phones, after hydration.
 const Lightbox = dynamic(
   () => import("@/components/studio/Lightbox").then((mod) => mod.Lightbox),
+  { ssr: false },
+);
+const BottomSheet = dynamic(
+  () => import("@/components/ui/BottomSheet").then((mod) => mod.BottomSheet),
   { ssr: false },
 );
 
