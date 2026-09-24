@@ -38,7 +38,7 @@ export function Feed({
           <button
             type="button"
             onClick={onRetry}
-            className="whitespace-nowrap text-sm font-medium text-accent underline-offset-2 hover:underline"
+            className="whitespace-nowrap text-sm font-medium text-accent touch:min-h-11 underline-offset-2 hover:underline"
           >
             Retry
           </button>

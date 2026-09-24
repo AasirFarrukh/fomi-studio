@@ -100,7 +100,7 @@ export function IconNav({ mode, onModeChange, status, progress, onHomeClick }) {
           aria-disabled={item.disabled || undefined}
           title={item.disabled ? `${item.label} — coming soon` : item.label}
           onClick={item.disabled ? undefined : item.onClick}
-          className={`relative z-10 flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode max-sm:h-12 max-sm:w-full max-sm:flex-col max-sm:gap-1 ${iconTone(item, pending)}`}
+          className={`relative z-10 flex h-9 w-11 items-center sm:pointer-coarse:h-11 justify-center rounded-chip transition-colors duration-mode max-sm:h-12 max-sm:w-full max-sm:flex-col max-sm:gap-1 ${iconTone(item, pending)}`}
         >
           <NavIcon name={item.key} />
           <span className="text-[11px] font-medium leading-none sm:sr-only">{item.label}</span>

@@ -22,7 +22,7 @@ export function PromptCard({ generation, onReuse }) {
         <button
           type="button"
           onClick={() => onReuse(generation, promptRef.current)}
-          className="press-spring rounded-chip border border-line px-2.5 py-1 text-xs font-medium text-accent transition-colors duration-base hover:bg-raised"
+          className="press-spring hit-area relative rounded-chip border border-line px-2.5 py-1 text-xs font-medium text-accent transition-colors duration-base hover:bg-raised"
         >
           Reuse
         </button>

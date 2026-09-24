@@ -1,7 +1,7 @@
 export function Select({ label, value, onChange, options, className = "" }) {
   return (
     <label
-      className={`flex items-center gap-1.5 rounded-chip border border-line bg-surface px-3 py-2 text-sm text-ink ${className}`}
+      className={`flex items-center gap-1.5 rounded-chip touch:min-h-11 border border-line bg-surface px-3 py-2 text-sm text-ink ${className}`}
     >
       {label ? <span className="text-muted">{label}</span> : null}
       <select

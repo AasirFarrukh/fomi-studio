@@ -55,7 +55,7 @@ export function HistoryTray({ generations }) {
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((prev) => !prev)}
-        className="flex shrink-0 items-baseline justify-between gap-2 px-2 text-left sm:w-28 sm:flex-col sm:items-start sm:justify-center sm:gap-1 sm:rounded-card-lg sm:bg-raised sm:px-4 sm:py-3"
+        className="flex shrink-0 items-baseline justify-between gap-2 max-sm:min-h-11 max-sm:items-center px-2 text-left sm:w-28 sm:flex-col sm:items-start sm:justify-center sm:gap-1 sm:rounded-card-lg sm:bg-raised sm:px-4 sm:py-3"
       >
         <span className="flex items-baseline gap-2">
           <span className="font-display text-base text-ink">History</span>

@@ -25,7 +25,7 @@ export function Button({
       type="button"
       aria-busy={busy || undefined}
       disabled={disabled}
-      className={`relative inline-flex items-center justify-center gap-2 rounded-chip px-5 py-2.5 text-sm font-medium transition-[filter,background-color] duration-mode disabled:pointer-events-none ${dimWhenDisabled} ${look} ${className}`}
+      className={`relative inline-flex min-h-11 items-center justify-center gap-2 rounded-chip px-5 py-2.5 text-sm font-medium transition-[filter,background-color] duration-mode disabled:pointer-events-none ${dimWhenDisabled} ${look} ${className}`}
       {...props}
     >
       {children}

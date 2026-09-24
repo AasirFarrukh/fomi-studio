@@ -46,7 +46,7 @@ export function Segmented({ label, options, value, onChange }) {
             aria-checked={isActive}
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(option.value)}
-            className={`relative z-10 rounded-chip px-4 py-2 text-sm font-medium transition-colors duration-base ${
+            className={`relative z-10 rounded-chip px-4 py-2 text-sm touch:min-h-11 font-medium transition-colors duration-base ${
               isActive ? "text-on-accent" : "text-muted hover:text-ink"
             }`}
           >

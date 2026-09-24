@@ -1,4 +1,4 @@
-export function OrbitBorder({ radius = 20 }) {
+export function OrbitBorder({ radius = 22 }) {
   const rectProps = { x: 0, y: 0, width: "100%", height: "100%", rx: radius, pathLength: 100, fill: "none" };
 
   return (
