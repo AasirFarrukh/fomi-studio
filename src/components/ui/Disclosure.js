@@ -31,8 +31,10 @@ export function Disclosure({ title, children, defaultOpen = false }) {
           />
         </svg>
       </button>
-      <div id={panelId} className="disclosure-content" data-open={open}>
-        <div className="px-4 pb-4 text-sm text-muted">{children}</div>
+      <div id={panelId} className="disclosure-content" data-open={open} inert={!open}>
+        <div>
+          <p className="px-4 pb-4 text-sm text-muted">{children}</p>
+        </div>
       </div>
     </div>
   );
