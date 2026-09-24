@@ -7,10 +7,15 @@ import { useQuickLookTarget } from "@/components/studio/QuickLook";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { CLIP_PREVIEW_QUERY } from "@/lib/mediaQueries";
 
+// Rendered cell widths: two columns on phones, three (rail folded) or two
+// (open) on tablets, four beside the desktop panel, and five or six cells of
+// about 200-215px once the large-screen frame caps.
+const CARD_SIZES = "(min-width: 1536px) 216px, (min-width: 1024px) 18vw, (min-width: 640px) 28vw, 46vw";
+
 // Clips rest on their poster and only play while hovered or focused (never on
 // their own, never under reduced motion), so nothing in the feed moves for
 // more than a moment without being asked to; the lightbox has full controls.
-export function MediaCard({ item, position, total, onOpen }) {
+export function MediaCard({ item, position, total, eager = false, onOpen }) {
   const [loaded, setLoaded] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -73,7 +78,9 @@ export function MediaCard({ item, position, total, onOpen }) {
         src={isVideo ? item.poster : item.src}
         alt={item.prompt}
         fill
-        sizes="(min-width: 1536px) 16vw, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+        sizes={CARD_SIZES}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : undefined}
         className={`object-cover ${loaded ? "media-develop" : "opacity-0"}`}
         onLoad={() => setLoaded(true)}
       />

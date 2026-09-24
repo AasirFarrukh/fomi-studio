@@ -2,6 +2,10 @@ import { PromptCard } from "@/components/studio/PromptCard";
 import { MediaGrid } from "@/components/studio/MediaGrid";
 import { EmptyState } from "@/components/studio/EmptyState";
 
+// The newest run's first row is the LCP candidate at every width: two cells on
+// phones, four on desktop. Only those skip lazy loading.
+const FIRST_ROW = 4;
+
 export function Feed({
   generations,
   status,
@@ -47,7 +51,7 @@ export function Feed({
 
       {showEmpty ? <EmptyState mode={mode} /> : null}
 
-      {generations.map((generation) => (
+      {generations.map((generation, index) => (
         <div
           key={generation.generationId}
           id={`gen-${generation.generationId}`}
@@ -58,6 +62,7 @@ export function Feed({
           <MediaGrid
             items={generation.items}
             generation={generation}
+            eagerCount={index === 0 ? FIRST_ROW : 0}
             onOpenLightbox={onOpenLightbox}
           />
         </div>

@@ -227,7 +227,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
                   fill
                   sizes="80vw"
                   className="lightbox-media-el object-contain"
-                  priority
+                  loading="eager"
                 />
               )}
 
