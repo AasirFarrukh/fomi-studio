@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { readDurationMs } from "@/lib/motion";
 
 // Keyed on flight.id by the caller, so every launch mounts a fresh ghost that
 // paints once at the source rect before the transition to the composer starts.
@@ -11,7 +12,8 @@ export function RecipeFlight({ flight, onLand }) {
     if (!flight) return undefined;
 
     const frame = requestAnimationFrame(() => setInFlight(true));
-    const timer = setTimeout(onLand, 340);
+    // The ghost's travel runs --duration-slow; its fade is timed to end with it.
+    const timer = setTimeout(onLand, readDurationMs("--duration-slow"));
 
     return () => {
       cancelAnimationFrame(frame);

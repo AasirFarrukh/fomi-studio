@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import Image from "next/image";
 import { formatTime } from "@/lib/format";
 import { getUsableRect } from "@/lib/rect";
+import { readDurationMs } from "@/lib/motion";
 import { ChevronIcon } from "@/components/ui/icons";
 
 const SWIPE_THRESHOLD = 48;
@@ -162,7 +163,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
       } else if (sourceEl && document.contains(sourceEl)) {
         sourceEl.focus({ preventScroll: true });
       }
-    }, reduced ? 120 : 200);
+    }, readDurationMs(reduced ? "--duration-fast" : "--duration-base"));
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
