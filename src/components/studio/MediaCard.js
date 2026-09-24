@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useToneLink } from "@/components/studio/ToneLink";
 import { useQuickLookTarget } from "@/components/studio/QuickLook";
 
-export function MediaCard({ item, onOpen }) {
+export function MediaCard({ item, position, total, onOpen }) {
   const [loaded, setLoaded] = useState(false);
   const isVideo = item.type === "video";
   const link = useToneLink().linkProps(item);
@@ -46,7 +46,7 @@ export function MediaCard({ item, onOpen }) {
       ref={cardRef}
       {...link}
       role="button"
-      aria-label={`Open ${item.prompt}`}
+      aria-label={`Open ${isVideo ? "clip" : "image"} ${position} of ${total}: ${item.prompt}`}
       aria-haspopup="dialog"
       tabIndex={0}
       onClick={handleOpen}

@@ -9,6 +9,7 @@ import { ChevronIcon } from "@/components/ui/icons";
 
 const SWIPE_THRESHOLD = 48;
 const EDGE_BUMP_MS = 260;
+const COPIED_MS = 1600;
 
 function preloadNeighbor(item) {
   if (!item) return () => {};
@@ -35,7 +36,9 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
   );
   const [activeIndex, setActiveIndex] = useState(startIndex);
   const [edgeBump, setEdgeBump] = useState(null);
+  const [copied, setCopied] = useState(false);
   const item = items[activeIndex];
+  const kind = item.type === "video" ? "Clip" : "Image";
 
   // The Lightbox instance can outlive a single "open" if a new item opens
   // before the previous close animation finishes unmounting it — resync by
@@ -50,6 +53,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
   const contentRef = useRef(null);
   const touchStartRef = useRef(null);
   const edgeBumpTimerRef = useRef(null);
+  const copiedTimerRef = useRef(null);
   const pendingReuseRef = useRef(null);
 
   const atStart = activeIndex === 0;
@@ -77,7 +81,13 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
     });
   }, [bumpEdge, items.length]);
 
-  useEffect(() => () => window.clearTimeout(edgeBumpTimerRef.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(edgeBumpTimerRef.current);
+      window.clearTimeout(copiedTimerRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!open) return undefined;
@@ -165,7 +175,14 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
   }
 
   function handleCopyPrompt() {
-    navigator.clipboard?.writeText(item.prompt).catch(() => {});
+    navigator.clipboard
+      ?.writeText(item.prompt)
+      .then(() => {
+        setCopied(true);
+        window.clearTimeout(copiedTimerRef.current);
+        copiedTimerRef.current = window.setTimeout(() => setCopied(false), COPIED_MS);
+      })
+      .catch(() => {});
   }
 
   return (
@@ -182,6 +199,9 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
           <Dialog.Description className="sr-only">
             {`${item.model}, ${item.aspectRatio}, generated ${formatTime(item.createdAt)}`}
           </Dialog.Description>
+          <p role="status" className="sr-only">
+            {copied ? "Prompt copied." : `${kind} ${activeIndex + 1} of ${items.length}`}
+          </p>
           <div className="lightbox-body">
             <div
               className="lightbox-media"
@@ -194,6 +214,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
                   className="lightbox-media-el"
                   src={item.src}
                   poster={item.poster}
+                  aria-label={item.prompt}
                   controls
                   autoPlay
                   loop
@@ -212,7 +233,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
 
               <button
                 type="button"
-                aria-label="Previous"
+                aria-label={`Previous ${kind.toLowerCase()}`}
                 disabled={atStart}
                 onClick={goPrev}
                 className="lightbox-nav lightbox-nav-prev"
@@ -221,7 +242,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
               </button>
               <button
                 type="button"
-                aria-label="Next"
+                aria-label={`Next ${kind.toLowerCase()}`}
                 disabled={atEnd}
                 onClick={goNext}
                 className="lightbox-nav lightbox-nav-next"
@@ -264,7 +285,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited, containe
                   onClick={handleCopyPrompt}
                   className="press-spring flex items-center justify-center whitespace-nowrap rounded-chip border border-line px-2 py-2 text-xs font-medium text-ink transition-colors duration-base hover:bg-raised"
                 >
-                  Copy prompt
+                  {copied ? "Copied" : "Copy prompt"}
                 </button>
                 <button
                   type="button"

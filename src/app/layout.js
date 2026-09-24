@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
       <body>
         <ThemeProvider>
           <GrainOverlay />
-          <main>{children}</main>
+          {children}
         </ThemeProvider>
       </body>
     </html>

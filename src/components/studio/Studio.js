@@ -270,7 +270,7 @@ export function Studio() {
             onHomeClick={handleHomeClick}
           />
           <GenerationAnnouncer status={status} stage={stage} items={items} error={error} />
-          <div className="studio-body page-frame flex flex-1 flex-col gap-4 py-4">
+          <main className="studio-body page-frame flex flex-1 flex-col gap-4 py-4">
             <HistoryTray generations={generations} />
             <div className="flex flex-1 flex-col gap-4 sm:flex-row">
               <ComposerDock
@@ -293,7 +293,7 @@ export function Studio() {
                 mode={mode}
               />
             </div>
-          </div>
+          </main>
           <ComposerBar
             mode={mode}
             prompt={prompt}

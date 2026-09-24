@@ -13,6 +13,7 @@ function HistoryThumb({ item }) {
     <a
       {...link}
       href={`#gen-${item.generationId}`}
+      aria-label={`Jump to ${item.type === "video" ? "clip" : "image"}: ${item.prompt}`}
       onPointerDown={(event) => {
         pointerTypeRef.current = event.pointerType;
       }}

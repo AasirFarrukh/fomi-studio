@@ -12,7 +12,7 @@ export function SiteHeader({ mode, onModeChange, status, progress, stage, onHome
           <span className="font-display text-2xl font-bold text-ink" aria-hidden="true">
             F
           </span>
-          <span className="sr-only">Fomi Studio</span>
+          <h1 className="sr-only">Fomi Studio</h1>
 
           <GenerationStatusBar status={status} progress={progress} stage={stage} />
 

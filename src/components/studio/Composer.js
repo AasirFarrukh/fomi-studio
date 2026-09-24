@@ -57,6 +57,7 @@ export function Composer({
           ref={promptRef}
           value={prompt}
           onChange={(event) => onPromptChange(event.target.value)}
+          aria-label="Prompt"
           placeholder={
             mode === "video"
               ? "Describe the shot you want to develop…"
