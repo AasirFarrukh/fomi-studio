@@ -47,6 +47,36 @@
 }
 
 /*
+ * Tailwind has no --duration-* theme namespace, so duration-base and friends
+ * would otherwise compile to nothing and every transition would fall back to
+ * the 150ms default instead of the motion tokens.
+ */
+@utility duration-fast {
+  --tw-duration: var(--duration-fast);
+  transition-duration: var(--duration-fast);
+}
+
+@utility duration-base {
+  --tw-duration: var(--duration-base);
+  transition-duration: var(--duration-base);
+}
+
+@utility duration-mode {
+  --tw-duration: var(--duration-mode);
+  transition-duration: var(--duration-mode);
+}
+
+@utility duration-slow {
+  --tw-duration: var(--duration-slow);
+  transition-duration: var(--duration-slow);
+}
+
+@utility duration-develop {
+  --tw-duration: var(--duration-develop);
+  transition-duration: var(--duration-develop);
+}
+
+/*
  * Darkroom (dark) is the fallback; Paper (light) is opted into via
  * [data-theme="light"]. Both branches are written explicitly so the
  * inline bootstrap script (see layout.js) only ever has to set one
