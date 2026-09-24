@@ -3,8 +3,10 @@ import { PromptCard } from "@/components/studio/PromptCard";
 import { MediaGrid } from "@/components/studio/MediaGrid";
 import { EmptyState } from "@/components/studio/EmptyState";
 
-// The newest run's first row is the LCP candidate at every width: two cells on
-// phones, four on desktop. Only those skip lazy loading.
+// The newest run's first row — two cells on phones, four on desktop — skips
+// lazy loading so it starts developing as soon as the HTML lands. No higher
+// fetch priority: cards fade in, so they are never the LCP, and the hoisted
+// preloads measured slower against the text that is.
 const FIRST_ROW = 4;
 
 export const Feed = memo(function Feed({
