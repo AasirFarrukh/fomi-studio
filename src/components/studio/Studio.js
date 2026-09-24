@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { HistoryTray } from "@/components/studio/HistoryTray";
@@ -20,10 +20,9 @@ import { useRecipeFlight } from "@/hooks/useRecipeFlight";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { COMPACT_QUERY, RAIL_QUERY, REDUCED_MOTION_QUERY } from "@/lib/mediaQueries";
 import { readDurationMs } from "@/lib/motion";
-import {
-  imageModels as fallbackImageModels,
-  videoModels as fallbackVideoModels,
-} from "@/data/models";
+import { imageModels, videoModels } from "@/data/models";
+
+const MODELS = { image: imageModels, video: videoModels };
 
 // No reason the dialog primitives ship in the main bundle — only fetched
 // once someone actually opens a piece of media.
@@ -47,17 +46,13 @@ function itemsToGeneration(items) {
   };
 }
 
-export function Studio() {
+export function Studio({ initialGenerations }) {
   const [mode, setMode] = useState("image");
   const [prompt, setPrompt] = useState("");
   const [count, setCount] = useState(4);
-  const [models, setModels] = useState({
-    image: fallbackImageModels,
-    video: fallbackVideoModels,
-  });
-  const [modelId, setModelId] = useState(fallbackImageModels[0].id);
-  const [aspectRatio, setAspectRatio] = useState(fallbackImageModels[0].ratios[0]);
-  const [generations, setGenerations] = useState([]);
+  const [modelId, setModelId] = useState(imageModels[0].id);
+  const [aspectRatio, setAspectRatio] = useState(imageModels[0].ratios[0]);
+  const [generations, setGenerations] = useState(initialGenerations);
   const [lightboxData, setLightboxData] = useState(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -77,40 +72,16 @@ export function Studio() {
   const { status, items, error, progress, stage, generate, retry, cancel } = useGeneration();
   const { flight, launch, land, landedPulse } = useRecipeFlight(promptRef);
 
-  useEffect(() => {
-    let active = true;
-
-    fetch("/api/models")
-      .then((response) => response.json())
-      .then((data) => {
-        if (active) setModels(data);
-      })
-      .catch(() => {});
-
-    fetch("/api/history")
-      .then((response) => response.json())
-      .then((data) => {
-        if (active) setGenerations(data.generations ?? []);
-      })
-      .catch(() => {});
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const currentModels = useMemo(() => models[mode] ?? [], [models, mode]);
+  const currentModels = MODELS[mode];
 
   const handleModeChange = useCallback(
     (nextMode) => {
       setMode(nextMode);
-      const list = models[nextMode] ?? [];
-      if (list.length > 0) {
-        setModelId(list[0].id);
-        setAspectRatio(list[0].ratios[0]);
-      }
+      const [first] = MODELS[nextMode];
+      setModelId(first.id);
+      setAspectRatio(first.ratios[0]);
     },
-    [models],
+    [],
   );
 
   const handleModelChange = useCallback(
@@ -143,22 +114,20 @@ export function Studio() {
   const applyRecipe = useCallback(
     (generation) => {
       const type = generation.type === "video" ? "video" : "image";
-      const list = models[type] ?? [];
+      const list = MODELS[type];
       const model = list.find((entry) => entry.id === generation.modelId) ?? list[0];
 
       setMode(type);
       setPrompt(generation.prompt);
-      if (model) {
-        setModelId(model.id);
-        setAspectRatio(
-          model.ratios.includes(generation.aspectRatio)
-            ? generation.aspectRatio
-            : model.ratios[0],
-        );
-      }
+      setModelId(model.id);
+      setAspectRatio(
+        model.ratios.includes(generation.aspectRatio)
+          ? generation.aspectRatio
+          : model.ratios[0],
+      );
       promptRef.current?.focus();
     },
-    [models],
+    [],
   );
 
   // Opens whichever composer is currently folded away. Returns whether anything

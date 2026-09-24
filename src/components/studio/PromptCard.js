@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { formatTime } from "@/lib/format";
+import { LocalTime } from "@/components/ui/LocalTime";
 
 export function PromptCard({ generation, onReuse }) {
   const promptRef = useRef(null);
@@ -16,9 +16,7 @@ export function PromptCard({ generation, onReuse }) {
           {generation.model}
         </span>
         <span className="font-data text-xs text-muted">{generation.aspectRatio}</span>
-        <span className="font-data text-xs text-muted">
-          {formatTime(generation.createdAt)}
-        </span>
+        <LocalTime iso={generation.createdAt} className="font-data text-xs text-muted" />
         <button
           type="button"
           onClick={() => onReuse(generation, promptRef.current)}
