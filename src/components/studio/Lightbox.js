@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import Image from "next/image";
 import { formatTime } from "@/lib/format";
 import { getUsableRect } from "@/lib/rect";
+import { ChevronIcon } from "@/components/ui/icons";
 
 const SWIPE_THRESHOLD = 48;
 const EDGE_BUMP_MS = 260;
@@ -25,7 +26,7 @@ function preloadNeighbor(item) {
   return () => {};
 }
 
-export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
+export function Lightbox({ data, open, onOpenChange, onReuse, onExited, container }) {
   const { generation, itemId, sourceEl } = data;
   const items = generation.items;
   const startIndex = Math.max(
@@ -169,7 +170,7 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
+      <Dialog.Portal container={container}>
         <Dialog.Overlay className="lightbox-overlay" />
         <Dialog.Content
           ref={contentRef}
@@ -287,15 +288,6 @@ export function Lightbox({ data, open, onOpenChange, onReuse, onExited }) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
-}
-
-function ChevronIcon({ direction }) {
-  const d = direction === "left" ? "M12.5 5 7.5 10l5 5" : "M7.5 5l5 5-5 5";
-  return (
-    <svg viewBox="0 0 20 20" className="h-5 w-5" aria-hidden="true">
-      <path d={d} stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
 }
 
 function CloseIcon() {

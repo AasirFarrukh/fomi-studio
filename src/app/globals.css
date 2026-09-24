@@ -133,6 +133,7 @@ html {
  */
 :root {
   --tab-bar-h: 56px;
+  --composer-bar-h: 48px;
   --dock-gap: 8px;
 }
 
@@ -196,6 +197,12 @@ body {
  * rail opening or closing reflows the grid in place. Phones are pinned at two
  * and desktop at the mockup's four; the extra fifth and sixth columns only
  * unlock inside the large-screen frame, once the feed can hold them.
+ *
+ * A run is only ever 1-8 items, so at three, five or six columns a four-item
+ * run would leave an orphan or a ragged empty band. There the prompt card
+ * joins the row as its first cell instead (as in the mockup) — spanning two
+ * columns at three- and six-up, one at five-up — which squares the run off and
+ * holds the prompt to a readable measure instead of a full-width line.
  */
 .media-grid,
 .generation {
@@ -209,11 +216,27 @@ body {
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023.98px) {
   @container feed (min-width: 30rem) {
     .media-grid,
     .generation {
       --cols: 3;
+      --prompt-span: 2;
+    }
+
+    .generation {
+      display: grid;
+      align-items: start;
+    }
+
+    .generation > .media-grid {
+      display: contents;
+    }
+
+    .generation > .prompt-card {
+      grid-column: span var(--prompt-span);
+      align-self: stretch;
+      align-content: space-between;
     }
   }
 }
@@ -230,19 +253,12 @@ body {
     .media-grid,
     .generation {
       --cols: 5;
+      --prompt-span: 1;
     }
 
-    /*
-     * A run is only ever 1-8 items, so extra columns alone would leave a ragged
-     * empty band. Instead the prompt card joins the row as its first cell (as in
-     * the mockup) — one column at five-up, two at six-up — which fills the row
-     * and holds the prompt to a readable measure instead of a full-width line.
-     */
     .generation {
       display: grid;
-      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
       align-items: start;
-      gap: 12px;
     }
 
     .generation > .media-grid {
@@ -251,6 +267,8 @@ body {
 
     .generation > .prompt-card {
       grid-column: span var(--prompt-span);
+      align-self: stretch;
+      align-content: space-between;
     }
   }
 
@@ -261,6 +279,11 @@ body {
       --prompt-span: 2;
     }
   }
+}
+
+/* Inert while a run is a flex column; used once a query above seats the prompt. */
+.generation {
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
 }
 
 /*
@@ -393,7 +416,13 @@ body {
   }
 
   .studio-body {
-    padding-bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom) + 16px);
+    padding-bottom: calc(
+      var(--tab-bar-h) + env(safe-area-inset-bottom) + var(--dock-gap) + var(--composer-bar-h) + 16px
+    );
+  }
+
+  .composer-bar {
+    bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom) + var(--dock-gap));
   }
 
   .nav-indicator[data-pending] {
@@ -419,13 +448,197 @@ body {
 }
 
 /*
+ * Composer host. Desktop: a fixed-width panel that stretches with the feed.
+ * Tablet: a sticky, viewport-tall rail — 64px of icons until opened, then the
+ * full composer. The composer keeps its open width while the host clips it, so
+ * widening reveals it like a drawer rather than reflowing its controls; its
+ * hide is delayed until the narrowing finishes so it never blinks out early.
+ */
+.composer-host {
+  --composer-w: 340px;
+  position: relative;
+  flex-shrink: 0;
+  width: var(--composer-w);
+  overflow: hidden;
+}
+
+.composer-rail {
+  display: none;
+}
+
+@media (min-width: 1536px) {
+  .composer-host {
+    --composer-w: 400px;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .composer-host {
+    --composer-w: 320px;
+    position: sticky;
+    top: 16px;
+    align-self: flex-start;
+    height: calc(100dvh - 32px);
+    transition: width var(--duration-slow) var(--ease-out-expo);
+  }
+
+  .composer-rail {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    display: flex;
+    width: 62px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-block: 12px;
+    transition: opacity var(--duration-base) ease;
+  }
+
+  .composer-full {
+    width: var(--composer-w);
+    height: 100%;
+    overflow-y: auto;
+    transition:
+      opacity var(--duration-base) ease,
+      visibility 0s linear 0s;
+  }
+
+  .composer-host:not([data-expanded]) {
+    width: 64px;
+  }
+
+  .composer-host:not([data-expanded]) .composer-full {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity var(--duration-fast) ease,
+      visibility 0s linear var(--duration-slow);
+  }
+
+  .composer-host[data-expanded] .composer-rail {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/*
+ * Composer sheet (phones). Rises from the bottom edge; --drag-y is written by
+ * the handle's pointer drag and both keyframes read it, so a dismissed sheet
+ * falls from where the finger let go and a settled one springs back to 0.
+ */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+}
+
+.sheet-overlay[data-state="open"] {
+  animation: lightbox-overlay-in var(--duration-base) ease-out both;
+}
+
+.sheet-overlay[data-state="closed"] {
+  animation: lightbox-overlay-out var(--duration-base) ease-in both;
+}
+
+.sheet-content {
+  --drag-y: 0px;
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 61;
+  display: flex;
+  max-height: calc(100dvh - env(safe-area-inset-top) - 24px);
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -24px 48px -24px color-mix(in srgb, var(--color-bg) 80%, black);
+  outline: none;
+  transform: translateY(var(--drag-y));
+  transition: transform var(--duration-base) var(--ease-out-expo);
+}
+
+.sheet-content[data-dragging] {
+  transition: none;
+}
+
+.sheet-content[data-state="open"] {
+  animation: sheet-in var(--duration-slow) var(--ease-out-expo) backwards;
+}
+
+.sheet-content[data-state="closed"] {
+  animation: sheet-out var(--duration-base) var(--ease-out-expo) forwards;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(var(--drag-y));
+  }
+}
+
+@keyframes sheet-out {
+  from {
+    transform: translateY(var(--drag-y));
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.sheet-handle {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 12px 0 8px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.sheet-grip {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-chip);
+  background: color-mix(in srgb, var(--color-muted) 45%, transparent);
+}
+
+.sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+}
+
+/*
  * The reuse ghost: prompt text only, no media, flying from the prompt card to
  * the composer input. The hook skips it entirely under reduced motion, so this
  * never needs an opacity-only fallback.
  */
 .recipe-ghost {
   position: fixed;
-  z-index: 40;
+  z-index: 70;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -910,6 +1123,8 @@ video.lightbox-media-el {
   }
 
   .tone-target,
+  .composer-host,
+  .composer-full,
   .tab-indicator,
   .nav-indicator,
   .nav-indicator-fill,
@@ -948,6 +1163,18 @@ video.lightbox-media-el {
 
   .quicklook-backdrop {
     animation: none;
+  }
+
+  .sheet-content {
+    transition: none;
+  }
+
+  .sheet-content[data-state="open"] {
+    animation: sheet-fade-in var(--duration-fast) linear backwards;
+  }
+
+  .sheet-content[data-state="closed"] {
+    animation: sheet-fade-out var(--duration-fast) linear forwards;
   }
 
   .quicklook-frame {

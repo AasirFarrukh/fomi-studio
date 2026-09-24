@@ -29,6 +29,8 @@ export function Composer({
   onSubmit,
   onCancel,
   landedPulse,
+  headerAction,
+  className = "",
 }) {
   const isLoading = status === "loading";
   const currentModel = models.find((model) => model.id === modelId) ?? models[0];
@@ -40,9 +42,14 @@ export function Composer({
   return (
     <section
       aria-label="Composer"
-      className="flex w-full flex-col gap-4 rounded-panel border border-line bg-surface p-4 shadow-panel md:w-[340px] md:shrink-0 2xl:w-[400px]"
+      className={`flex flex-col gap-4 ${className}`}
     >
-      <Tabs options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <Tabs options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
+        </div>
+        {headerAction}
+      </div>
 
       <div className="relative flex flex-col gap-3 rounded-card-lg border border-line bg-raised p-3">
         {landedPulse ? <span key={landedPulse} aria-hidden="true" className="recipe-landed-flash" /> : null}

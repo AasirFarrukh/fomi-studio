@@ -5,12 +5,19 @@ import dynamic from "next/dynamic";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { HistoryTray } from "@/components/studio/HistoryTray";
 import { Composer } from "@/components/studio/Composer";
+import { ComposerDock } from "@/components/studio/ComposerDock";
+import { ComposerBar } from "@/components/studio/ComposerBar";
+import { BottomSheet } from "@/components/ui/BottomSheet";
+import { IconButton } from "@/components/ui/IconButton";
+import { ChevronIcon } from "@/components/ui/icons";
 import { Feed } from "@/components/studio/Feed";
 import { RecipeFlight } from "@/components/studio/RecipeFlight";
 import { ToneLinkProvider } from "@/components/studio/ToneLink";
 import { QuickLookProvider } from "@/components/studio/QuickLook";
 import { useGeneration } from "@/hooks/useGeneration";
 import { useRecipeFlight } from "@/hooks/useRecipeFlight";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { COMPACT_QUERY, RAIL_QUERY, REDUCED_MOTION_QUERY } from "@/lib/mediaQueries";
 import {
   imageModels as fallbackImageModels,
   videoModels as fallbackVideoModels,
@@ -22,6 +29,10 @@ const Lightbox = dynamic(
   () => import("@/components/studio/Lightbox").then((mod) => mod.Lightbox),
   { ssr: false },
 );
+
+// Mirrors --duration-slow: how long the sheet takes to rise and the rail to
+// widen, so a reuse flight measures the prompt box where it finally rests.
+const COMPOSER_REVEAL_MS = 320;
 
 function itemsToGeneration(items) {
   if (!items || items.length === 0) return null;
@@ -51,6 +62,18 @@ export function Studio() {
   const [generations, setGenerations] = useState([]);
   const [lightboxData, setLightboxData] = useState(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [railExpanded, setRailExpanded] = useState(false);
+  // Dialogs portal into this node rather than <body> so they stay inside
+  // [data-mode] and pick up the active mode's accent.
+  const [modeRoot, setModeRoot] = useState(null);
+
+  const isCompact = useMediaQuery(COMPACT_QUERY);
+  const isRail = useMediaQuery(RAIL_QUERY);
+
+  // The sheet only exists on phones; leaving that size (rotation, resize)
+  // closes it so the inline composer is the only one mounted.
+  if (!isCompact && sheetOpen) setSheetOpen(false);
 
   const promptRef = useRef(null);
   const { status, error, progress, stage, generate, retry, cancel } = useGeneration();
@@ -140,12 +163,39 @@ export function Studio() {
     [models],
   );
 
+  // Opens whichever composer is currently folded away. Returns whether anything
+  // had to move, so callers know to wait for it to settle.
+  const revealComposer = useCallback(() => {
+    if (isCompact && !sheetOpen) {
+      setSheetOpen(true);
+      return true;
+    }
+    if (isRail && !railExpanded) {
+      setRailExpanded(true);
+      return true;
+    }
+    return false;
+  }, [isCompact, isRail, sheetOpen, railExpanded]);
+
   const handleReuse = useCallback(
     (generation, sourceEl) => {
-      launch(generation.prompt, sourceEl, () => applyRecipe(generation));
+      const fly = () => launch(generation.prompt, sourceEl, () => applyRecipe(generation));
+      if (!revealComposer()) {
+        fly();
+        return;
+      }
+      const reduced = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+      window.setTimeout(() => requestAnimationFrame(fly), reduced ? 0 : COMPOSER_REVEAL_MS);
     },
-    [launch, applyRecipe],
+    [launch, applyRecipe, revealComposer],
   );
+
+  const handleExpandRail = useCallback(() => {
+    setRailExpanded(true);
+    requestAnimationFrame(() => promptRef.current?.focus({ preventScroll: true }));
+  }, []);
+
+  const handleCollapseRail = useCallback(() => setRailExpanded(false), []);
 
   const handleHomeClick = useCallback(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -166,6 +216,17 @@ export function Studio() {
     setLightboxData(null);
   }, []);
 
+  const handleIgnite = useCallback(() => {
+    if (status === "loading") cancel();
+    else if (prompt.trim()) handleSubmit();
+    else handleExpandRail();
+  }, [status, prompt, cancel, handleSubmit, handleExpandRail]);
+
+  const handleSheetSubmit = useCallback(() => {
+    setSheetOpen(false);
+    handleSubmit();
+  }, [handleSubmit]);
+
   const handleRetry = useCallback(async () => {
     const items = await retry();
     const generation = itemsToGeneration(items);
@@ -174,10 +235,29 @@ export function Studio() {
     }
   }, [retry]);
 
+  const composerProps = {
+    mode,
+    onModeChange: handleModeChange,
+    prompt,
+    onPromptChange: setPrompt,
+    promptRef,
+    count,
+    onCountChange: setCount,
+    aspectRatio,
+    onAspectRatioChange: setAspectRatio,
+    modelId,
+    onModelChange: handleModelChange,
+    models: currentModels,
+    status,
+    onSubmit: handleSubmit,
+    onCancel: cancel,
+    landedPulse,
+  };
+
   return (
     <ToneLinkProvider>
       <QuickLookProvider>
-        <div data-mode={mode} className="flex min-h-screen flex-col bg-bg">
+        <div ref={setModeRoot} data-mode={mode} className="flex min-h-screen flex-col bg-bg">
           <SiteHeader
             mode={mode}
             onModeChange={handleModeChange}
@@ -188,24 +268,14 @@ export function Studio() {
           />
           <div className="studio-body page-frame flex flex-1 flex-col gap-4 py-4">
             <HistoryTray generations={generations} />
-            <div className="flex flex-1 flex-col gap-4 md:flex-row">
-              <Composer
-                mode={mode}
-                onModeChange={handleModeChange}
-                prompt={prompt}
-                onPromptChange={setPrompt}
-                promptRef={promptRef}
-                count={count}
-                onCountChange={setCount}
-                aspectRatio={aspectRatio}
-                onAspectRatioChange={setAspectRatio}
-                modelId={modelId}
-                onModelChange={handleModelChange}
-                models={currentModels}
-                status={status}
-                onSubmit={handleSubmit}
-                onCancel={cancel}
-                landedPulse={landedPulse}
+            <div className="flex flex-1 flex-col gap-4 sm:flex-row">
+              <ComposerDock
+                composerProps={composerProps}
+                showComposer={!isCompact}
+                expanded={railExpanded}
+                onExpand={handleExpandRail}
+                onCollapse={handleCollapseRail}
+                onIgnite={handleIgnite}
               />
               <Feed
                 generations={generations}
@@ -220,17 +290,44 @@ export function Studio() {
               />
             </div>
           </div>
-        </div>
-        <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
-        {lightboxData ? (
-          <Lightbox
-            data={lightboxData}
-            open={lightboxOpen}
-            onOpenChange={handleLightboxOpenChange}
-            onReuse={handleReuse}
-            onExited={handleLightboxExited}
+          <ComposerBar
+            mode={mode}
+            prompt={prompt}
+            status={status}
+            stage={stage}
+            open={sheetOpen}
+            onOpen={() => setSheetOpen(true)}
           />
-        ) : null}
+          {isCompact ? (
+            <BottomSheet
+              open={sheetOpen}
+              onOpenChange={setSheetOpen}
+              title="Composer"
+              container={modeRoot}
+            >
+              <Composer
+                {...composerProps}
+                onSubmit={handleSheetSubmit}
+                headerAction={
+                  <IconButton label="Close composer" onClick={() => setSheetOpen(false)}>
+                    <ChevronIcon direction="down" className="h-4 w-4" />
+                  </IconButton>
+                }
+              />
+            </BottomSheet>
+          ) : null}
+          <RecipeFlight key={flight?.id ?? "idle"} flight={flight} onLand={land} />
+          {lightboxData ? (
+            <Lightbox
+              data={lightboxData}
+              open={lightboxOpen}
+              onOpenChange={handleLightboxOpenChange}
+              onReuse={handleReuse}
+              onExited={handleLightboxExited}
+              container={modeRoot}
+            />
+          ) : null}
+        </div>
       </QuickLookProvider>
     </ToneLinkProvider>
   );
