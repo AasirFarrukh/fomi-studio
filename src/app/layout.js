@@ -23,6 +23,12 @@ export const metadata = {
   description: "Describe an image or video, watch it develop.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 const THEME_BOOTSTRAP = `(function(){try{var s=localStorage.getItem("fomi-theme");var t=s==="dark"||s==="light"?s:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
 
 export default function RootLayout({ children }) {

@@ -77,7 +77,7 @@ export function IconNav({ mode, onModeChange, status, progress, onHomeClick }) {
   return (
     <nav
       aria-label="Studio sections"
-      className="relative flex items-center gap-1 rounded-chip border border-line bg-surface p-1"
+      className="icon-nav relative flex items-center gap-1 rounded-chip border border-line bg-surface p-1"
     >
       <span
         aria-hidden="true"
@@ -95,15 +95,15 @@ export function IconNav({ mode, onModeChange, status, progress, onHomeClick }) {
         <button
           key={item.key}
           type="button"
-          aria-label={item.label}
           aria-current={item.here ? "page" : undefined}
           aria-pressed={item.selected === undefined ? undefined : item.selected}
           aria-disabled={item.disabled || undefined}
           title={item.disabled ? `${item.label} — coming soon` : item.label}
           onClick={item.disabled ? undefined : item.onClick}
-          className={`relative z-10 flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode ${iconTone(item, pending)}`}
+          className={`relative z-10 flex h-9 w-11 items-center justify-center rounded-chip transition-colors duration-mode max-sm:h-12 max-sm:w-full max-sm:flex-col max-sm:gap-1 ${iconTone(item, pending)}`}
         >
           <NavIcon name={item.key} />
+          <span className="text-[11px] font-medium leading-none sm:sr-only">{item.label}</span>
         </button>
       ))}
     </nav>

@@ -186,7 +186,7 @@ export function Studio() {
             stage={stage}
             onHomeClick={handleHomeClick}
           />
-          <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:px-6">
+          <div className="studio-body page-frame flex flex-1 flex-col gap-4 py-4">
             <HistoryTray generations={generations} />
             <div className="flex flex-1 flex-col gap-4 md:flex-row">
               <Composer

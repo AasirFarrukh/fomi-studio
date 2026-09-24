@@ -3,7 +3,7 @@ export function GenerationStatusBar({ status, progress, stage }) {
 
   return (
     <div
-      className="hidden md:flex flex-1 items-center gap-3 rounded-chip border border-line bg-surface px-4 py-2 transition-opacity duration-base"
+      className="hidden sm:flex flex-1 items-center gap-3 rounded-chip border border-line bg-surface px-4 py-2 transition-opacity duration-base"
       style={{ opacity: isLoading ? 1 : 0.35 }}
       role="status"
       aria-live="polite"
