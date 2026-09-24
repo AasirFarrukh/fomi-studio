@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs } from "@/components/ui/Tabs";
+import { Segmented } from "@/components/ui/Segmented";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Disclosure } from "@/components/ui/Disclosure";
@@ -46,7 +46,7 @@ export function Composer({
     >
       <div className="flex items-center gap-2">
         <div className="flex-1">
-          <Tabs options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
+          <Segmented label="Mode" options={MODE_OPTIONS} value={mode} onChange={onModeChange} />
         </div>
         {headerAction}
       </div>

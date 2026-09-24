@@ -382,7 +382,7 @@ body {
   animation: develop var(--duration-develop) var(--ease-out-expo) both;
 }
 
-.tab-indicator {
+.segment-indicator {
   transition:
     transform var(--duration-base) var(--ease-out-expo),
     background-color var(--duration-mode) ease;
@@ -1171,7 +1171,7 @@ video.lightbox-media-el {
   .tone-target,
   .composer-host,
   .composer-full,
-  .tab-indicator,
+  .segment-indicator,
   .nav-indicator,
   .nav-indicator-fill,
   .press-spring:active,
